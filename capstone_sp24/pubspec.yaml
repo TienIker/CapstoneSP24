@@ -1,0 +1,39 @@
+name: sharing_cafe
+description: An app to meet up for coffee with strangers. Dating, Social & Share.
+publish_to: 'none' #
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.4 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  flutter_svg: ^2.0.9 # help us to use SVG in our app
+  provider: ^6.1.1 # for State management
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.1
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  fonts:
+    - family: Opensans
+      fonts:
+        - asset: assets/fonts/opensans/OpenSans-Regular.ttf
+        - asset: assets/fonts/opensans/OpenSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/opensans/OpenSans-Light.ttf
+          weight: 300
