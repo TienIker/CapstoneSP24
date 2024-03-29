@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sharing_cafe/constants.dart';
-//import 'package:sharing_cafe/view/screens/home/home_screen.dart';
-//import 'package:sharing_cafe/screens/profile/profile_screen.dart';
+import 'package:sharing_cafe/view/screens/blogs/blog_list/blog_list_screen.dart';
+import 'package:sharing_cafe/view/screens/events/event_list/event_list_screen.dart';
+import 'package:sharing_cafe/view/screens/matching/swipe_screen.dart';
+import 'package:sharing_cafe/view/screens/home/home_screen.dart';
+import 'package:sharing_cafe/view/screens/profiles/profile_page/profile_screen.dart';
 
 const Color inActiveIconColor = Color(0xFFB6B6B6);
 
@@ -25,25 +28,12 @@ class _InitScreenState extends State<InitScreen> {
   }
 
   final pages = [
-    //const HomeScreen(),
-    const Center(
-      child: Text("Trang chủ"),
-    ),
-    const Center(
-      child: Text("Sự kiện"),
-    ),
-    const Center(
-      child: Text("Kết nối"),
-    ),
-    const Center(
-      child: Text("Blog"),
-    ),
-    const Center(
-      child: Text("Trang cá nhân"),
-    ),
-    //const ProfileScreen()
+    const HomeScreen(),
+    const EventListScreen(),
+    const SwipeScreen(),
+    const BlogListScreen(),
+    const ProfileScreen()
   ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
