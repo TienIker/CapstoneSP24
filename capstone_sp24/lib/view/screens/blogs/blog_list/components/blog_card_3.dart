@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class BlogCard3 extends StatelessWidget {
   final String imageUrl;
   final String title;
-  final int number;
+  final String number;
   final Function() onTap;
 
   const BlogCard3({

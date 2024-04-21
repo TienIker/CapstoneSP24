@@ -32,7 +32,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Tương hợp',
+          'Bạn bè',
           style: heading2Style,
         ),
       ),
@@ -53,6 +53,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                           Navigator.pushNamed(context, ChatScreen.routeName,
                               arguments: {
                                 'id': matches[index].userId,
+                                'name': matches[index].userName,
                               });
                         },
                         child: Card(

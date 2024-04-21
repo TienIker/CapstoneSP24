@@ -1,5 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
+import 'package:sharing_cafe/helper/error_helper.dart';
+import 'package:sharing_cafe/helper/image_helper.dart';
+import 'package:sharing_cafe/helper/key_value_pair.dart';
+import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
+import 'package:sharing_cafe/provider/categories_provider.dart';
+import 'package:sharing_cafe/service/blog_service.dart';
+import 'package:sharing_cafe/service/image_service.dart';
 import 'package:sharing_cafe/view/components/form_field.dart';
 import 'package:sharing_cafe/view/components/select_form.dart';
 import 'package:sharing_cafe/view/screens/blogs/create_blog/components/blog_editor.dart';
@@ -13,7 +24,72 @@ class CreateBlogScreen extends StatefulWidget {
 }
 
 class _CreateBlogScreenState extends State<CreateBlogScreen> {
-  // You will need to manage the state for the inputs and selections
+  String? _imageUrl;
+
+  String? _interestId;
+  final QuillController _contentController = QuillController.basic();
+
+  final TextEditingController _titleController = TextEditingController();
+  uploadImage(ImageSource source) async {
+    var imageFile = await ImageHelper.pickImage(source);
+    if (imageFile != null) {
+      var url = await ImageService().uploadImage(imageFile);
+      if (url.isNotEmpty) {
+        setState(() {
+          _imageUrl = url;
+        });
+      } else {
+        ErrorHelper.showError(message: "Không tải được hình ảnh");
+      }
+    }
+  }
+
+  showImageTypeSelector() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+            content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: const Icon(Icons.image_search),
+              title: const Text('Chọn ảnh từ thư viện'),
+              onTap: () {
+                Navigator.pop(context);
+                uploadImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: const Text('Chụp ảnh mới'),
+              onTap: () {
+                Navigator.pop(context);
+                uploadImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ));
+      },
+    );
+  }
+
+  bool validateInput() {
+    if (_interestId == null || _interestId!.isEmpty) {
+      return false;
+    }
+    if (_contentController.document.toPlainText().isEmpty) {
+      return false;
+    }
+    if (_titleController.text.isEmpty) {
+      return false;
+    }
+    if (_imageUrl == null || _imageUrl!.isEmpty) {
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,8 +108,26 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: TextButton(
-              onPressed: () {
-                // Handle attend action
+              onPressed: () async {
+                if (!validateInput()) {
+                  ErrorHelper.showError(
+                      message: "Vui lòng nhập đầy đủ thông tin");
+                  return;
+                }
+                var userId = await SharedPrefHelper.getUserId();
+                var result = await BlogService().createBlog(
+                    userId: userId,
+                    interestId: _interestId!,
+                    content: _contentController.document.toPlainText(),
+                    title: _titleController.text,
+                    image: _imageUrl!,
+                    likesCount: 0,
+                    commentsCount: 0,
+                    isApprove: true);
+                if (result == true) {
+                  // ignore: use_build_context_synchronously
+                  Navigator.pop(context);
+                }
               },
               style: ButtonStyle(
                 backgroundColor:
@@ -56,7 +150,7 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
           children: <Widget>[
             GestureDetector(
               onTap: () {
-                // Open image picker
+                showImageTypeSelector();
               },
               child: Container(
                 height: 300,
@@ -64,25 +158,30 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
                     color: kFormFieldColor,
                     borderRadius: BorderRadius.all(Radius.circular(16))),
                 alignment: Alignment.center,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.image,
-                      color: Colors.grey[600],
-                      size: 48,
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Text(
-                      "Thêm ảnh bìa bài viết",
-                      style: TextStyle(
-                        color: Colors.grey[600],
+                child: _imageUrl != null && _imageUrl!.isNotEmpty
+                    ? Image.network(
+                        _imageUrl!,
+                        fit: BoxFit.cover,
+                      )
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.image,
+                            color: Colors.grey[600],
+                            size: 48,
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Text(
+                            "Thêm ảnh bìa bài viết",
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                            ),
+                          )
+                        ],
                       ),
-                    )
-                  ],
-                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -90,23 +189,46 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
               padding: EdgeInsets.symmetric(vertical: 8.0),
               child: Text('Tiêu đề', style: heading2Style),
             ),
-            const KFormField(
+            KFormField(
               hintText: "Tên sự kiện",
+              controller: _titleController,
             ),
             const SizedBox(height: 8),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0),
               child: Text('Blog', style: heading2Style),
             ),
-            const BlogEditor(),
+            BlogEditor(
+              controller: _contentController,
+            ),
             const SizedBox(height: 8),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0),
               child: Text('Chọn chủ đề', style: heading2Style),
             ),
-            const KSelectForm(
-              hintText: 'Chọn chủ đề',
-              options: [],
+            Consumer<CategoriesProvider>(
+              builder: (context, categoriesProvider, child) {
+                if (categoriesProvider.categories.isEmpty) {
+                  categoriesProvider.getCategories();
+                }
+
+                var interest = categoriesProvider.categories
+                    .map((e) => KeyValuePair(e.categoryId, e.title))
+                    .toList()
+                    .firstWhereOrNull((element) => element.key == _interestId);
+                return KSelectForm(
+                  hintText: 'Chọn chủ đề',
+                  options: categoriesProvider.categories
+                      .map((e) => KeyValuePair(e.categoryId, e.title))
+                      .toList(),
+                  onChanged: (p0) {
+                    setState(() {
+                      _interestId = p0?.key;
+                    });
+                  },
+                  selectedValue: interest,
+                );
+              },
             )
           ],
         ),

@@ -3,8 +3,10 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:sharing_cafe/constants.dart';
 
 class BlogEditor extends StatefulWidget {
+  final QuillController controller;
   const BlogEditor({
     super.key,
+    required this.controller,
   });
 
   @override
@@ -12,8 +14,6 @@ class BlogEditor extends StatefulWidget {
 }
 
 class _BlogEditorState extends State<BlogEditor> {
-  final QuillController _controller = QuillController.basic();
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,14 +25,14 @@ class _BlogEditorState extends State<BlogEditor> {
         children: [
           QuillToolbar.simple(
               configurations: QuillSimpleToolbarConfigurations(
-            controller: _controller,
+            controller: widget.controller,
           )),
           Divider(
             color: Colors.grey[300],
           ),
           QuillEditor.basic(
             configurations: QuillEditorConfigurations(
-              controller: _controller,
+              controller: widget.controller,
               placeholder: "Viết bài của bạn ở đây...",
               minHeight: 500,
             ),

@@ -64,6 +64,21 @@ class ApiHelper {
     return response;
   }
 
+  Future<http.Response> putList(
+      String endpoint, List<Map<String, dynamic>> data) async {
+    var token = await getToken();
+    final response = await http.put(
+      Uri.parse(baseUrl + endpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'charset': 'utf-8',
+        "Authorization": token,
+      },
+      body: json.encode(data),
+    );
+    return response;
+  }
+
   Future<http.Response> delete(String endpoint) async {
     var token = await getToken();
     final response = await http.delete(

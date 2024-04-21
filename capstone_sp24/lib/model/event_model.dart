@@ -14,6 +14,7 @@ class EventModel {
   final DateTime? endOfEvent;
   final String? organizationName;
   final String? address;
+  final String? interestId;
 
   EventModel({
     required this.eventId,
@@ -29,6 +30,7 @@ class EventModel {
     this.endOfEvent,
     this.organizationName,
     this.address,
+    this.interestId,
   });
 
   factory EventModel.fromJson(Map<String, dynamic> json) {
@@ -39,13 +41,14 @@ class EventModel {
       description: json['description'],
       timeOfEvent: DateTimeHelper.parseToLocal(json['time_of_event']),
       location: json['location'],
-      participantsCount: json['participants_count'],
+      participantsCount: json['participants_count'] ?? 0,
       isAprrove: json['is_approve'],
       backgroundImage: json['background_img'],
       createdAt: DateTimeHelper.parseToLocal(json['created_at']),
       endOfEvent: DateTimeHelper.parseToLocal(json['end_of_event']),
-      organizationName: json['name'],
+      organizationName: json['user_name'],
       address: json['address'],
+      interestId: json['interest_id'],
     );
   }
 
@@ -56,7 +59,7 @@ class EventModel {
       timeOfEvent: DateTimeHelper.parseToLocal(json['time_of_event']),
       participantsCount: json['participants_count'] ?? 0,
       backgroundImage: json['background_img'],
-      location: json['address'],
+      address: json['address'],
     );
   }
 }

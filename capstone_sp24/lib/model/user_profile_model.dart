@@ -1,29 +1,29 @@
-class ProfileModel {
+class UserProfileModel {
   final String userId;
-  final String image;
-  final String name;
-  final String phone;
-  // final String address;
-  final String? description;
-  final String gender;
-  final String age;
-  final String purpose;
-  final String interest;
-  final String problem;
-  final String unlikeTopic;
-  final String favoriteDrink;
-  final String freeTime;
+  String profileAvatar;
+  String userName;
+  String age;
+  String address;
+  String gender;
+  String? story;
+  String? purpose;
+  String? favoriteLocation;
+  List<Interest> interest;
+  List<Problem> problem;
+  List<UnlikeTopic> unlikeTopic;
+  List<FavoriteDrink> favoriteDrink;
+  List<FreeTime> freeTime;
 
-  ProfileModel({
+  UserProfileModel({
     required this.userId,
-    required this.image,
-    required this.name,
-    required this.phone,
-    // required this.address,
-    this.description,
-    required this.gender,
+    required this.profileAvatar,
+    required this.userName,
     required this.age,
-    required this.purpose,
+    required this.address,
+    required this.gender,
+    this.story,
+    this.purpose,
+    this.favoriteLocation,
     required this.interest,
     required this.problem,
     required this.unlikeTopic,
@@ -31,22 +31,97 @@ class ProfileModel {
     required this.freeTime,
   });
 
-  factory ProfileModel.fromJson(Map<String, dynamic> json) {
-    return ProfileModel(
-      userId: json["user_id"],
-      image: json["profile_avatar"],
-      name: json["user_name"],
-      phone: json["phone"],
-      // address: json["address"],
-      description: json["story"],
-      gender: json["gender"],
-      age: json["age"],
-      purpose: json["purpose"],
-      interest: json["interest_name"],
-      problem: json["personal_problem"],
-      unlikeTopic: json["unlike_topic"],
-      favoriteDrink: json["favorite_drink"],
-      freeTime: json["free_time"],
+  factory UserProfileModel.fromJson(Map<String, dynamic> json) {
+    return UserProfileModel(
+      userId: json['user_id'],
+      profileAvatar: json['profile_avatar'] ?? "",
+      userName: json['user_name'],
+      age: json['age'] ?? "",
+      address: json['address'] ?? "",
+      gender: json['gender'] ?? "",
+      story: json['story'] ?? "",
+      purpose: json['purpose'],
+      favoriteLocation: json['favorite_location'],
+      interest: List<Interest>.from(
+          json['interest'].map((x) => Interest.fromJson(x))),
+      problem:
+          List<Problem>.from(json['problem'].map((x) => Problem.fromJson(x))),
+      unlikeTopic: List<UnlikeTopic>.from(
+          json['unlike_topic'].map((x) => UnlikeTopic.fromJson(x))),
+      favoriteDrink: List<FavoriteDrink>.from(
+          json['favorite_drink'].map((x) => FavoriteDrink.fromJson(x))),
+      freeTime: List<FreeTime>.from(
+          json['free_time'].map((x) => FreeTime.fromJson(x))),
+    );
+  }
+}
+
+class Interest {
+  String interestId;
+  String interestName;
+
+  Interest({required this.interestId, required this.interestName});
+
+  factory Interest.fromJson(Map<String, dynamic> json) {
+    return Interest(
+      interestId: json['interest_id'],
+      interestName: json['interest_name'],
+    );
+  }
+}
+
+class Problem {
+  String personalProblemId;
+  String problem;
+
+  Problem({required this.personalProblemId, required this.problem});
+
+  factory Problem.fromJson(Map<String, dynamic> json) {
+    return Problem(
+      personalProblemId: json['personal_problem_id'],
+      problem: json['problem'],
+    );
+  }
+}
+
+class UnlikeTopic {
+  String unlikeTopicId;
+  String unlikeTopic;
+
+  UnlikeTopic({required this.unlikeTopicId, required this.unlikeTopic});
+
+  factory UnlikeTopic.fromJson(Map<String, dynamic> json) {
+    return UnlikeTopic(
+      unlikeTopicId: json['unlike_topic_id'],
+      unlikeTopic: json['topic'],
+    );
+  }
+}
+
+class FavoriteDrink {
+  String favoriteDrinkId;
+  String favoriteDrink;
+
+  FavoriteDrink({required this.favoriteDrinkId, required this.favoriteDrink});
+
+  factory FavoriteDrink.fromJson(Map<String, dynamic> json) {
+    return FavoriteDrink(
+      favoriteDrinkId: json['favorite_drink_id'],
+      favoriteDrink: json['favorite_drink'],
+    );
+  }
+}
+
+class FreeTime {
+  String freeTimeId;
+  String freeTime;
+
+  FreeTime({required this.freeTimeId, required this.freeTime});
+
+  factory FreeTime.fromJson(Map<String, dynamic> json) {
+    return FreeTime(
+      freeTimeId: json['free_time_id'],
+      freeTime: json['free_time'],
     );
   }
 }

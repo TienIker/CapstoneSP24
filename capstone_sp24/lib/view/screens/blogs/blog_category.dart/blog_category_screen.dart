@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sharing_cafe/constants.dart';
+import 'package:sharing_cafe/helper/datetime_helper.dart';
+import 'package:sharing_cafe/model/blog_model.dart';
+import 'package:sharing_cafe/service/blog_service.dart';
+import 'package:sharing_cafe/view/screens/blogs/blog_detail/blog_detail_screen.dart';
 import 'package:sharing_cafe/view/screens/blogs/blog_list/components/blog_card.dart';
-import 'package:sharing_cafe/view/screens/events/event_detail/event_detail_screen.dart';
 
 class BlogCategoryScreen extends StatefulWidget {
   static String routeName = "blog-category";
@@ -17,10 +20,15 @@ class _BlogCategoryScreenState extends State<BlogCategoryScreen> {
   String sortType = "Phổ biến";
   @override
   Widget build(BuildContext context) {
+    final Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
+    final interestImageUrl = arguments["imageUrl"];
+    final interestTitle = arguments["title"];
+    final interestNumber = arguments["number"];
+    final interestId = arguments["interestId"];
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Du lịch",
+        title: Text(
+          interestTitle,
           style: heading2Style,
         ),
       ),
@@ -37,30 +45,29 @@ class _BlogCategoryScreenState extends State<BlogCategoryScreen> {
                   child: Stack(
                     children: [
                       Container(
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: NetworkImage(
-                                'https://picsum.photos/id/456/400/400'),
+                            image: NetworkImage(interestImageUrl),
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
-                      const Positioned(
+                      Positioned(
                         bottom: 16,
                         left: 16,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Du lịch',
-                              style: TextStyle(
+                              interestTitle,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
                             ),
-                            Text("323 blogs",
-                                style: TextStyle(
+                            Text("$interestNumber blogs",
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
                                 )),
@@ -112,68 +119,34 @@ class _BlogCategoryScreenState extends State<BlogCategoryScreen> {
               ),
             ),
             Expanded(
-              child: ListView(
-                children: [
-                  BlogCard(
-                    imageUrl: 'https://picsum.photos/id/123/200/300',
-                    title:
-                        'Hội thảo nghệ thuật "Sell Yourself" - Hành trình Khởi lửa hành trang',
-                    dateTime: 'T2, 20 THÁNG 5 LÚC 18.00',
-                    avtUrl: 'https://picsum.photos/id/43/200/300',
-                    ownerName: 'Bùi Hoàng Việt Anh',
-                    time: '5 phút trước',
-                    onTap: () {
-                      Navigator.pushNamed(context, EventDetailScreen.routeName);
+              child: FutureBuilder(
+                future: BlogService().getBlogsbyInterestId(interestId),
+                builder: (context, snapshot) {
+                  List<BlogModel> blogs = snapshot.data == null
+                      ? []
+                      : snapshot.data as List<BlogModel>;
+                  return ListView.builder(
+                    itemCount: blogs.length,
+                    itemBuilder: (context, index) {
+                      return BlogCard(
+                        imageUrl: blogs[index].image,
+                        title: blogs[index].title,
+                        dateTime: DateTimeHelper.formatDateTime2(
+                            blogs[index].createdAt),
+                        avtUrl: blogs[index].ownerAvatar ?? blogs[index].image,
+                        ownerName: blogs[index].ownerName,
+                        time: DateTimeHelper.howOldFrom(blogs[index].createdAt),
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, BlogDetailScreen.routeName,
+                              arguments: {
+                                'id': blogs[index].blogId,
+                              });
+                        },
+                      );
                     },
-                  ),
-                  BlogCard(
-                    imageUrl: 'https://picsum.photos/id/765/200/300',
-                    title: 'Lễ hội âm nhạc Infinity Street Festival 2024',
-                    dateTime: 'T2, 20 THÁNG 5 LÚC 18.00',
-                    avtUrl: 'https://picsum.photos/id/215/200/300',
-                    ownerName: 'Phạm Hải Yến',
-                    time: '8 phút trước',
-                    onTap: () {
-                      Navigator.pushNamed(context, EventDetailScreen.routeName);
-                    },
-                  ),
-                  BlogCard(
-                    imageUrl: 'https://picsum.photos/id/233/200/300',
-                    title:
-                        'M\'aRTISaN Workshop: Workshop vẽ tranh Canvas - THE WORLD AT YOUR FINGERTIPS',
-                    dateTime: 'T2, 20 THÁNG 5 LÚC 18.00',
-                    avtUrl: 'https://picsum.photos/id/23/200/300',
-                    ownerName: 'Khuất Văn Khang',
-                    time: '12 phút trước',
-                    onTap: () {
-                      Navigator.pushNamed(context, EventDetailScreen.routeName);
-                    },
-                  ),
-                  BlogCard(
-                    imageUrl: 'https://picsum.photos/id/233/200/300',
-                    title:
-                        'M\'aRTISaN Workshop: Workshop vẽ tranh Canvas - THE WORLD AT YOUR FINGERTIPS',
-                    dateTime: 'T2, 20 THÁNG 5 LÚC 18.00',
-                    avtUrl: 'https://picsum.photos/id/23/200/300',
-                    ownerName: 'Khuất Văn Khang',
-                    time: '12 phút trước',
-                    onTap: () {
-                      Navigator.pushNamed(context, EventDetailScreen.routeName);
-                    },
-                  ),
-                  BlogCard(
-                    imageUrl: 'https://picsum.photos/id/233/200/300',
-                    title:
-                        'M\'aRTISaN Workshop: Workshop vẽ tranh Canvas - THE WORLD AT YOUR FINGERTIPS',
-                    dateTime: 'T2, 20 THÁNG 5 LÚC 18.00',
-                    avtUrl: 'https://picsum.photos/id/23/200/300',
-                    ownerName: 'Khuất Văn Khang',
-                    time: '12 phút trước',
-                    onTap: () {
-                      Navigator.pushNamed(context, EventDetailScreen.routeName);
-                    },
-                  ),
-                ],
+                  );
+                },
               ),
             )
           ],

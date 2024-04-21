@@ -99,47 +99,47 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                                       horizontal: 32.0)),
                                     ),
                                     child: const Text(
-                                      'Tham gia',
+                                      'Sẽ tham gia',
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
-                                  TextButton(
-                                    onPressed: () {
-                                      // Handle attend action
-                                    },
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateColor.resolveWith(
-                                              (states) => kPrimaryLightColor),
-                                      padding:
-                                          MaterialStateProperty.resolveWith(
-                                              (states) =>
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 24.0)),
-                                    ),
-                                    child: const Text(
-                                      'Kết nối nhóm',
-                                      style: TextStyle(
-                                          color: kPrimaryColor,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      // Handle attend action
-                                    },
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateColor.resolveWith(
-                                              (states) => kPrimaryLightColor),
-                                    ),
-                                    child: const Icon(
-                                      Icons.more_horiz,
-                                      color: kPrimaryColor,
-                                    ),
-                                  ),
+                                  // TextButton(
+                                  //   onPressed: () {
+                                  //     // Handle attend action
+                                  //   },
+                                  //   style: ButtonStyle(
+                                  //     backgroundColor:
+                                  //         MaterialStateColor.resolveWith(
+                                  //             (states) => kPrimaryLightColor),
+                                  //     padding:
+                                  //         MaterialStateProperty.resolveWith(
+                                  //             (states) =>
+                                  //                 const EdgeInsets.symmetric(
+                                  //                     horizontal: 24.0)),
+                                  //   ),
+                                  //   child: const Text(
+                                  //     'Kết nối nhóm',
+                                  //     style: TextStyle(
+                                  //         color: kPrimaryColor,
+                                  //         fontWeight: FontWeight.bold),
+                                  //   ),
+                                  // ),
+                                  // TextButton(
+                                  //   onPressed: () {
+                                  //     // Handle attend action
+                                  //   },
+                                  //   style: ButtonStyle(
+                                  //     backgroundColor:
+                                  //         MaterialStateColor.resolveWith(
+                                  //             (states) => kPrimaryLightColor),
+                                  //   ),
+                                  //   child: const Icon(
+                                  //     Icons.more_horiz,
+                                  //     color: kPrimaryColor,
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                               const Divider(),
@@ -152,7 +152,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                 title: Text(
                                   DateTimeHelper.formatDateTime2(
                                           eventDetails.timeOfEvent) +
-                                      " - ${DateTimeHelper.formatDateTime2(eventDetails.endOfEvent!)}",
+                                      " - ${DateTimeHelper.formatDateTime2(eventDetails.endOfEvent) ?? ""}",
                                 ),
                               ),
                               ListTile(

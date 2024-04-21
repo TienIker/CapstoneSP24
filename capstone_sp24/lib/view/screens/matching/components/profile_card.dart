@@ -4,7 +4,7 @@ class ProfileCard extends StatelessWidget {
   final String image;
   final String name;
   final String? description;
-  final int age;
+  final String age;
   const ProfileCard({
     super.key,
     required this.image,
@@ -68,6 +68,7 @@ class ProfileCard extends StatelessWidget {
                           color: Colors.white,
                           fontSize: 16,
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                   ],
                 ),

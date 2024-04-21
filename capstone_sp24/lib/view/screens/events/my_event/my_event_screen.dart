@@ -62,12 +62,13 @@ class _MyEventScreenState extends State<MyEventScreen> {
                   return ListView.builder(
                     itemCount: events.length,
                     itemBuilder: (context, index) {
+                      GlobalKey moreButtonKey = GlobalKey();
                       return EventCard(
                         imageUrl: events[index].backgroundImage,
                         title: events[index].title,
                         dateTime: DateTimeHelper.formatDateTime(
                             events[index].timeOfEvent),
-                        location: events[index].location ?? "",
+                        address: events[index].address ?? "",
                         attendeeCount: events[index].participantsCount,
                         onTap: () {
                           Navigator.pushNamed(
@@ -75,6 +76,80 @@ class _MyEventScreenState extends State<MyEventScreen> {
                               arguments: {
                                 'id': events[index].eventId,
                               });
+                        },
+                        moreButtonKey: moreButtonKey,
+                        onMoreButtonClick: () {
+                          // Get the RenderBox object
+                          final RenderBox renderBox =
+                              moreButtonKey.currentContext?.findRenderObject()
+                                  as RenderBox;
+                          final Offset offset =
+                              renderBox.localToGlobal(Offset.zero);
+
+                          // Calculate the position for the menu
+                          final RelativeRect position = RelativeRect.fromLTRB(
+                              offset.dx, // This is the left position.
+                              offset.dy, // This is the top position.
+                              30, // This is the right position (not used here).
+                              0 // This is the bottom position (not used here).
+                              );
+
+                          // Show the menu
+                          showMenu(
+                            context: context,
+                            position: position,
+                            items: [
+                              PopupMenuItem(
+                                value: "edit",
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, CreateEventScreen.routeName,
+                                      arguments: {'id': events[index].eventId});
+                                },
+                                child: const Text("Chỉnh sửa"),
+                              ),
+                              PopupMenuItem(
+                                value: "delete",
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Text("Xác nhận"),
+                                        content: const Text(
+                                            "Bạn có chắc chắn muốn xóa sự kiện này không?"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text("Hủy"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Provider.of<EventProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .deleteEvent(
+                                                      events[index].eventId)
+                                                  .then((value) {
+                                                Navigator.pop(context);
+                                              });
+                                            },
+                                            child: const Text("Xóa"),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                child: const Text(
+                                  "Xóa",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ],
+                          );
                         },
                       );
                     },

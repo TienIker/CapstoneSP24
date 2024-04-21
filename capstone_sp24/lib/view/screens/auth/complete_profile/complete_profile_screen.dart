@@ -1,10 +1,17 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+// ignore: unnecessary_import
+import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:sharing_cafe/model/interest_model.dart';
-import 'package:sharing_cafe/provider/interest_provider.dart';
-import 'package:sharing_cafe/view/screens/auth/otp/otp_screen.dart';
+import 'package:sharing_cafe/helper/error_helper.dart';
+import 'package:sharing_cafe/helper/image_helper.dart';
+import 'package:sharing_cafe/model/province_model.dart';
+import 'package:sharing_cafe/provider/account_provider.dart';
+import 'package:sharing_cafe/service/image_service.dart';
+import 'package:sharing_cafe/service/location_service.dart';
+import 'package:sharing_cafe/view/screens/auth/complete_profile/select_interest_screen.dart';
 
 import '../../../../constants.dart';
 
@@ -17,130 +24,353 @@ class CompleteProfileScreen extends StatefulWidget {
 }
 
 class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
-  bool _isLoadingListInterests = false;
-  List<InterestModel>? selectedHobby = [];
+  final _formKey = GlobalKey<FormState>();
+  String? _imageUrl;
+  ProvinceModel? _addressProvince;
+  DistrictModel? _addressDistrict;
+  String? _age;
+  String? _gender;
+  String provinceId = "";
+  final TextEditingController _storyController = TextEditingController();
+  final List<String?> errors = [];
 
-  @override
-  void initState() {
-    loadListInterests();
-    super.initState();
+  void addError({String? error}) {
+    if (!errors.contains(error)) {
+      setState(() {
+        errors.add(error);
+      });
+    }
   }
 
-  void loadListInterests() {
-    setState(() {
-      _isLoadingListInterests = true;
-    });
-    Provider.of<InterestProvider>(context, listen: false)
-        .getListInterests()
-        .then((_) {
+  void removeError({String? error}) {
+    if (errors.contains(error)) {
       setState(() {
-        _isLoadingListInterests = false;
+        errors.remove(error);
       });
-    });
+    }
+  }
+
+  uploadImage(ImageSource source) async {
+    var imageFile = await ImageHelper.pickImage(source);
+    if (imageFile != null) {
+      var url = await ImageService().uploadImage(imageFile);
+      if (url.isNotEmpty) {
+        setState(() {
+          _imageUrl = url;
+        });
+      } else {
+        ErrorHelper.showError(message: "Không tải được hình ảnh");
+      }
+    }
+  }
+
+  showImageTypeSelector() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+            content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: const Icon(Icons.image_search),
+              title: const Text('Chọn ảnh từ thư viện'),
+              onTap: () {
+                Navigator.pop(context);
+                uploadImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: const Text('Chụp ảnh mới'),
+              onTap: () {
+                Navigator.pop(context);
+                uploadImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ));
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text(''),
-        ),
-        body: _isLoadingListInterests
-            ? const Center(
-                child: CircularProgressIndicator.adaptive(),
-              )
-            : Consumer<InterestProvider>(builder: (context, value, child) {
-                var listInterests = value.listInterests;
-                return SafeArea(
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 16),
-                            const Text("Bạn thích điều gì?",
-                                style: headingStyle),
-                            const SizedBox(height: 16),
-                            const Text(
-                              "Hãy chọn sở thích của mình để có đề xuất tốt hơn nhé.",
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            Wrap(
-                              children: listInterests.map(
-                                (hobby) {
-                                  bool isSelected = false;
-                                  if (selectedHobby!.contains(hobby.name)) {
-                                    isSelected = true;
-                                  }
-                                  return GestureDetector(
-                                    onTap: () {
-                                      if (!selectedHobby!
-                                          .contains(hobby.name)) {
-                                        if (selectedHobby!.length < 5) {
-                                          selectedHobby!.add(hobby);
-                                          setState(() {});
-                                          print(selectedHobby);
-                                        }
-                                      } else {
-                                        selectedHobby!.removeWhere(
-                                            (element) => element == hobby.name);
-                                        setState(() {});
-                                        print(selectedHobby);
-                                      }
-                                    },
-                                    child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 5, vertical: 4),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5, horizontal: 12),
-                                          decoration: BoxDecoration(
-                                              color: isSelected
-                                                  ? kPrimaryColor
-                                                  : Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(18),
-                                              border: Border.all(
-                                                  color: isSelected
-                                                      ? Colors.white
-                                                      : kPrimaryColor,
-                                                  width: 2)),
-                                          child: Text(
-                                            hobby.name,
-                                            style: TextStyle(
-                                                color: isSelected
-                                                    ? Colors.white
-                                                    : kPrimaryColor,
-                                                fontSize: 14),
+      appBar: AppBar(
+        title: const Text(""),
+      ),
+      body: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  const Text(
+                    'Hoàn thiện thông tin',
+                    style: heading2Style,
+                  ),
+                  const SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () {
+                      showImageTypeSelector();
+                    },
+                    child: Stack(
+                      children: [
+                        SizedBox(
+                            width: 120,
+                            height: 120,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: _imageUrl != null && _imageUrl!.isNotEmpty
+                                  ? Image.network(_imageUrl!, fit: BoxFit.cover)
+                                  : Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.image,
+                                          color: Colors.grey[600],
+                                          size: 48,
+                                        ),
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                        Text(
+                                          "Thêm ảnh",
+                                          style: TextStyle(
+                                            color: Colors.grey[600],
                                           ),
-                                        )),
-                                  );
-                                },
-                              ).toList(),
-                            ),
-                            const SizedBox(height: 20),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                    context, OtpScreen.routeName);
-                              },
-                              child: const Text("Đăng ký"),
-                            ),
-                            const SizedBox(height: 30),
-                            Text(
-                              "Bằng cách nhấp vào Đăng ký, bạn đồng ý \nvới Điều khoản và Điều kiện của chúng tôi",
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      ),
+                                        )
+                                      ],
+                                    ),
+                            )),
+                      ],
                     ),
                   ),
-                );
-              }));
+                  const Text(
+                    "",
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(),
+                          ),
+                          child: DropdownButtonFormField<String>(
+                            value: _age,
+                            decoration: const InputDecoration(
+                              prefixText: "     Tuổi | ",
+                              contentPadding: EdgeInsets.all(20),
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              hintText: '       Chọn độ tuổi',
+                            ),
+                            items: [
+                              '16 - 20',
+                              '21 - 25',
+                              '26 - 30',
+                              '31 - 35',
+                              '36 - 40',
+                              '41 - 50',
+                              'Không đề cập'
+                            ].map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (value) => setState(
+                              () {
+                                _age = value;
+                              },
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(),
+                          ),
+                          child: DropdownButtonFormField<String>(
+                            value: _gender,
+                            decoration: const InputDecoration(
+                              prefixText: "     Giới tính | ",
+                              contentPadding: EdgeInsets.all(20),
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              hintText: 'Chọn giới tính',
+                            ),
+                            items: ['Nam', 'Nữ', 'Không đề cập']
+                                .map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (value) => setState(
+                              () {
+                                _gender = value;
+                              },
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        FutureBuilder(
+                            future: LocationService().getProvince(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              var provinces =
+                                  snapshot.data as Set<ProvinceModel>;
+                              return Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  border: Border.all(),
+                                ),
+                                child: DropdownButtonFormField<ProvinceModel>(
+                                  value: _addressProvince,
+                                  decoration: const InputDecoration(
+                                    prefixText: "     Tỉnh/TP | ",
+                                    contentPadding: EdgeInsets.all(20),
+                                    border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    hintText: '   Chọn tỉnh thành',
+                                  ),
+                                  items: provinces.map((ProvinceModel value) {
+                                    return DropdownMenuItem<ProvinceModel>(
+                                      value: value,
+                                      child: Text(value.province),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) => setState(
+                                    () {
+                                      _addressDistrict = null;
+                                      _addressProvince = value;
+                                      provinceId = value?.provinceId ?? "";
+                                      print(provinceId);
+                                    },
+                                  ),
+                                ),
+                              );
+                            }),
+                        const SizedBox(height: 20),
+                        FutureBuilder(
+                            future: LocationService().getDistrict(provinceId),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              var districts =
+                                  snapshot.data as Set<DistrictModel>;
+                              return Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  border: Border.all(),
+                                ),
+                                child: DropdownButtonFormField<DistrictModel>(
+                                  value: _addressDistrict,
+                                  decoration: const InputDecoration(
+                                    prefixText: "Quận/Huyện | ",
+                                    contentPadding: EdgeInsets.all(20),
+                                    border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    hintText: 'Chọn quận / huyện',
+                                  ),
+                                  items: districts.map((DistrictModel value) {
+                                    return DropdownMenuItem<DistrictModel>(
+                                      value: value,
+                                      child: SizedBox(
+                                        width: 160,
+                                        child: Text(
+                                          value.fullName,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) => setState(
+                                    () {
+                                      _addressDistrict = value;
+                                    },
+                                  ),
+                                ),
+                              );
+                            }),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: _storyController,
+                          maxLines: 3,
+                          decoration: const InputDecoration(
+                            hintText: "Câu chuyện",
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Consumer<AccountProvider>(
+                          builder: (context, auth, child) => ElevatedButton(
+                            onPressed: () async {
+                              var result = await Provider.of<AccountProvider>(
+                                      context,
+                                      listen: false)
+                                  .completeUserProfile(
+                                profileAvatar: _imageUrl,
+                                age: _age,
+                                story: _storyController.text,
+                                addressProvince: _addressProvince?.province,
+                                addressDistrict: _addressDistrict?.fullName,
+                                gender: _gender,
+                              );
+                              if (result == true) {
+                                Navigator.pushNamed(
+                                    context, SelectInterestScreen.routeName);
+                              }
+                            },
+                            child: const Text("Tiếp tục"),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // const SizedBox(height: 16),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     SocalCard(
+                  //       icon: "assets/icons/google-icon.svg",
+                  //       press: () {},
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 16),
+                  // Text(
+                  //   '',
+                  //   textAlign: TextAlign.center,
+                  //   style: Theme.of(context).textTheme.bodySmall,
+                  // )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

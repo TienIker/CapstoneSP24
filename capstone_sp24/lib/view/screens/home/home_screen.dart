@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/helper/datetime_helper.dart';
+import 'package:sharing_cafe/helper/weather_helper.dart';
 import 'package:sharing_cafe/provider/home_provider.dart';
 import 'package:sharing_cafe/view/screens/blogs/blog_detail/blog_detail_screen.dart';
 
@@ -75,17 +76,11 @@ class _HomeScreen extends State<HomeScreen> {
               const SizedBox(
                 width: 8,
               ),
-              const Text('Sharing Café', style: heading2Style),
+              Text('Sharing Café',
+                  style: heading2Style.copyWith(color: kPrimaryColor)),
             ],
           ),
           actions: [
-            IconButton(
-              icon: const Icon(
-                Icons.messenger_outline,
-                size: 24,
-              ),
-              onPressed: () {/* ... */},
-            ),
             IconButton(
               icon: const Icon(
                 Icons.notifications_none_outlined,
@@ -115,6 +110,58 @@ class _HomeScreen extends State<HomeScreen> {
                 //         color: kPrimaryColor, fontWeight: FontWeight.bold),
                 //   ),
                 // ),
+                FutureBuilder(
+                  future: WeatherHelper().getWeather(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator.adaptive(),
+                      );
+                    }
+                    if (snapshot.hasError || snapshot.data == null) {
+                      return const Text("Không thể lấy thông tin thời tiết");
+                    }
+                    var weatherData = snapshot.data;
+                    return Container(
+                      padding: const EdgeInsets.all(16.0),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage('assets/images/weather.jpg'),
+                            fit: BoxFit.cover),
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Thời tiết",
+                            style: heading2Style,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Nhiệt độ: ${WeatherHelper().kelvinToCelsius(weatherData['main']['temp'])}°C",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: kPrimaryColor,
+                                ),
+                              ),
+                              Text(
+                                "Độ ẩm: ${weatherData['main']['humidity']}%",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: kPrimaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
                 const Text(
                   "Sự kiện thịnh hành",
                   style: heading2Style,
@@ -179,8 +226,9 @@ class _HomeScreen extends State<HomeScreen> {
                             title: blog.title,
                             dateTime:
                                 DateTimeHelper.formatDateTime(blog.createdAt),
-                            avtUrl: 'https://picsum.photos/id/200/200/300',
-                            ownerName: "Thịnh",
+                            avtUrl: blog.ownerAvatar ??
+                                'https://picsum.photos/id/200/200/300',
+                            ownerName: blog.ownerName,
                             time: howOldFrom(blog.createdAt),
                             onTap: () {
                               Navigator.pushNamed(

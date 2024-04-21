@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
+import 'package:sharing_cafe/provider/interest_provider.dart';
+import 'package:sharing_cafe/view/screens/blogs/blog_category.dart/blog_category_screen.dart';
 import 'package:sharing_cafe/view/screens/blogs/blog_list/components/blog_card_3.dart';
 
 class BlogCategoriesScreen extends StatefulWidget {
@@ -22,65 +25,37 @@ class _BlogCategoriesScreenState extends State<BlogCategoriesScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: GridView(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, mainAxisExtent: 128),
-          children: [
-            BlogCard3(
-              imageUrl: 'https://picsum.photos/id/23/200/300',
-              title: 'Du lịch',
-              number: 323,
-              onTap: () {},
-            ),
-            BlogCard3(
-              imageUrl: 'https://picsum.photos/id/43/200/300',
-              title: 'Sức khỏe',
-              number: 123,
-              onTap: () {},
-            ),
-            BlogCard3(
-              imageUrl: 'https://picsum.photos/id/54/200/300',
-              title: 'Khoa học công nghệ',
-              number: 323,
-              onTap: () {},
-            ),
-            BlogCard3(
-              imageUrl: 'https://picsum.photos/id/23/200/300',
-              title: 'Du lịch',
-              number: 323,
-              onTap: () {},
-            ),
-            BlogCard3(
-              imageUrl: 'https://picsum.photos/id/43/200/300',
-              title: 'Sức khỏe',
-              number: 323,
-              onTap: () {},
-            ),
-            BlogCard3(
-              imageUrl: 'https://picsum.photos/id/54/200/300',
-              title: 'Đời sống',
-              number: 323,
-              onTap: () {},
-            ),
-            BlogCard3(
-              imageUrl: 'https://picsum.photos/id/23/200/300',
-              title: 'Du lịch',
-              number: 323,
-              onTap: () {},
-            ),
-            BlogCard3(
-              imageUrl: 'https://picsum.photos/id/43/200/300',
-              title: 'Sức khỏe',
-              number: 323,
-              onTap: () {},
-            ),
-            BlogCard3(
-              imageUrl: 'https://picsum.photos/id/54/200/300',
-              title: 'Đời sống',
-              number: 323,
-              onTap: () {},
-            ),
-          ],
+        child: Consumer<InterestProvider>(
+          builder: (context, value, child) {
+            if (value.listInterestsParent.isEmpty) {
+              value.getListInterestsParent();
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, mainAxisExtent: 128),
+              itemCount: value.listInterestsParent.length,
+              itemBuilder: (context, index) {
+                var interest = value.listInterestsParent[index];
+                return BlogCard3(
+                  imageUrl: interest.imageUrl,
+                  title: interest.name,
+                  number: interest.numOfBlog.toString(),
+                  onTap: () {
+                    Navigator.pushNamed(context, BlogCategoryScreen.routeName,
+                        arguments: {
+                          "interestId": interest.interestId,
+                          "imageUrl": interest.imageUrl,
+                          "title": interest.name,
+                          "number": interest.numOfBlog,
+                        });
+                  },
+                );
+              },
+            );
+          },
         ),
       ),
     );

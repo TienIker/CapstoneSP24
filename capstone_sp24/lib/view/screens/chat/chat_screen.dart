@@ -3,15 +3,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
-import 'package:sharing_cafe/helper/api_helper.dart';
+
 import 'package:sharing_cafe/helper/datetime_helper.dart';
 import 'package:sharing_cafe/helper/error_helper.dart';
-import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
+import 'package:sharing_cafe/helper/key_value_pair.dart';
 import 'package:sharing_cafe/model/chat_message_model.dart';
+import 'package:sharing_cafe/model/recommend_cafe.dart';
 import 'package:sharing_cafe/provider/chat_provider.dart';
+import 'package:sharing_cafe/service/chat_service.dart';
 import 'package:sharing_cafe/view/components/date_time_picker.dart';
 import 'package:sharing_cafe/view/components/form_field.dart';
-import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:sharing_cafe/view/components/select_form.dart';
 
 class ChatScreen extends StatefulWidget {
   static String routeName = "/chat";
@@ -24,29 +26,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   bool _isLoading = true;
-  late String _userId;
-  late String _loggedUserId;
-  late io.Socket socket;
-
-  void connectAndListen() {
-    socket = io.io(ApiHelper().socketBaseUrl, <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': false,
-    });
-
-    socket.on('connect', (_) {
-      print('connected');
-    });
-
-    socket.on('message', (data) {
-      var message = ChatMessageModel.fromJson(data);
-      message.messageType = message.receiverId == _userId;
-      Provider.of<ChatProvider>(context, listen: false).addMessage(message);
-    });
-
-    socket.connect();
-  }
-
+  String _userName = "Chat";
   @override
   void initState() {
     super.initState();
@@ -57,61 +37,40 @@ class _ChatScreenState extends State<ChatScreen> {
       final Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
       var id = arguments['id'];
       setState(() {
-        _userId = id;
+        _userName = arguments['name'];
       });
+      Provider.of<ChatProvider>(context, listen: false).setUserId(id);
       return id;
     })
         .then((value) => Provider.of<ChatProvider>(context, listen: false)
             .getUserMessagesHistory(value))
-        .then((_) => SharedPrefHelper.getUserId())
-        .then((value) => setState(() {
-              _loggedUserId = value;
-            }))
-        .then((_) => connectAndListen())
+        .then((_) => Provider.of<ChatProvider>(context, listen: false)
+            .connectAndListen())
         .then((_) => setState(() {
               _isLoading = false;
             }));
   }
 
-  @override
-  void dispose() {
-    socket.disconnect();
-    socket.close();
-    print("disconnected");
-    super.dispose();
-  }
-
-  void sendMessage(String message) {
-    if (message.isNotEmpty) {
-      var data = {
-        'from': _loggedUserId,
-        'to': _userId,
-        'message': message,
-        'timestamp': DateTime.now().toIso8601String(),
-      };
-      socket.emit('message', data);
-    }
-  }
-
   DateTime? _selectedDateTime;
-  String? _title;
+  final TextEditingController _titleController = TextEditingController();
   String? _location;
 
-  void _handleDateTimeChange(DateTime dateTime) {
+  void _handleDateTimeChange(DateTime? dateTime) {
+    if (dateTime == null) return;
     setState(() {
       _selectedDateTime = dateTime;
     });
   }
 
   void _createAppointment() {
-    if (_selectedDateTime != null && _title != null && _location != null) {
+    if (_selectedDateTime != null &&
+        _titleController.text.isNotEmpty &&
+        _location != null) {
       print("Create appointment");
       Provider.of<ChatProvider>(context, listen: false).addAppointment(
-          _title!,
+          _titleController.text,
           _location!,
           _selectedDateTime!,
-          _loggedUserId,
-          _userId,
           "",
           "",
           "",
@@ -126,77 +85,119 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Chat"),
+        title: Text(_userName),
         actions: [
           IconButton(
               onPressed: () {
-                showDialog(
+                showModalBottomSheet(
                   context: context,
                   builder: (context) {
-                    return AlertDialog(
-                      title: const Row(
+                    return Container(
+                      padding: const EdgeInsets.all(16),
+                      height: 600,
+                      width: double.infinity,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(Icons.alarm),
-                          SizedBox(
-                            width: 8,
+                          const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.alarm),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                "Thêm lịch hẹn",
+                                style: headingStyle,
+                              ),
+                            ],
                           ),
-                          Text("Thêm lịch hẹn"),
+                          const Text(
+                            "Đặt lịch hẹn với người này?",
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 32,
+                          ),
+                          KFormField(
+                            hintText: "Tiêu đề",
+                            controller: _titleController,
+                            onChanged: (p0) {
+                              setState(() {
+                                _titleController.text = p0;
+                              });
+                            },
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          DateTimePicker(
+                            onDateTimeChanged: _handleDateTimeChange,
+                            label: "Thêm ngày",
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          FutureBuilder(
+                            future: Provider.of<ChatProvider>(context,
+                                    listen: false)
+                                .getRecommendCafe(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Row(
+                                  children: [
+                                    CircularProgressIndicator.adaptive(),
+                                    SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text("Đang lấy địa điểm gợi ý...")
+                                  ],
+                                );
+                              }
+                              if (snapshot.hasError) {
+                                return const Text("Error");
+                              }
+                              var locations =
+                                  snapshot.data as List<RecommendCafeModel>;
+                              return KSelectForm(
+                                hintText: "Địa điểm",
+                                onChanged: (p0) {
+                                  if (p0 != null) {
+                                    setState(() {
+                                      _location = p0.value;
+                                    });
+                                  }
+                                },
+                                options: locations
+                                    .map((e) => KeyValuePair(
+                                        e.description, e.description))
+                                    .toList(),
+                              );
+                            },
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("Hủy")),
+                              TextButton(
+                                  onPressed: () {
+                                    _createAppointment();
+                                  },
+                                  child: const Text("Đặt lịch")),
+                            ],
+                          ),
                         ],
                       ),
-                      content: SizedBox(
-                        height: 280,
-                        child: Column(
-                          children: [
-                            const Text(
-                              "Đặt lịch hẹn với người này?",
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            KFormField(
-                              hintText: "Tiêu đề",
-                              onChanged: (p0) {
-                                setState(() {
-                                  _title = p0;
-                                });
-                              },
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            DateTimePicker(
-                              onDateTimeChanged: _handleDateTimeChange,
-                              label: "Thêm ngày",
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            KFormField(
-                              hintText: "Địa điểm",
-                              onChanged: (p0) {
-                                setState(() {
-                                  _location = p0;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      actions: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text("Hủy")),
-                        TextButton(
-                            onPressed: () {
-                              _createAppointment();
-                            },
-                            child: const Text("Đặt lịch")),
-                      ],
                     );
                   },
                 );
@@ -213,7 +214,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: Consumer<ChatProvider>(
                       builder: (context, provider, child) {
-                    var messages = provider.getUserMessages(_userId);
+                    var messages = provider.getUserMessages(provider.userId);
                     return ListView.builder(
                         itemCount: messages.length,
                         reverse: true,
@@ -228,14 +229,21 @@ class _ChatScreenState extends State<ChatScreen> {
                             receiverName: messages[index].receiverName,
                             messageContent: messages[index].messageContent,
                             createdAt: messages[index].createdAt,
-                            messageType:
-                                !(messages[index].receiverId == _userId),
+                            messageType: !(messages[index].receiverId ==
+                                provider.userId),
                             appointment: messages[index].appointment,
                             isAppointment: messages[index].isAppointment,
                           );
+                          bool canConfirm =
+                              message.appointment?.isApproved == null &&
+                                  message.isAppointment == true &&
+                                  message.senderId == provider.userId;
+                          bool canCancel = message.appointment != null &&
+                              message.appointment!.isApproved != false;
                           var appointmentComponent = <Widget>[
                             Container(
-                              height: 200,
+                              height: 270,
+                              padding: const EdgeInsets.all(16),
                               width: MediaQuery.of(context).size.width * 0.8,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
@@ -245,10 +253,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                 ),
                               ),
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const SizedBox(
-                                    height: 30,
-                                  ),
                                   const Icon(
                                     Icons.alarm,
                                     size: 48,
@@ -277,17 +283,100 @@ class _ChatScreenState extends State<ChatScreen> {
                                     style: const TextStyle(
                                       fontSize: 14,
                                     ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        message.appointment?.isApproved == true,
+                                    child: const Text("Đã xác nhận",
+                                        style: TextStyle(
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.bold,
+                                        )),
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      canCancel
+                                          ? TextButton(
+                                              style: TextButton.styleFrom(
+                                                  backgroundColor: kErrorColor,
+                                                  fixedSize:
+                                                      const Size(100, 20)),
+                                              onPressed: () async {
+                                                await ChatService()
+                                                    .changeStatusSchedule(
+                                                        message
+                                                            .appointment!.id!,
+                                                        false);
+                                                ErrorHelper.showError(
+                                                    message:
+                                                        "Hủy lịch hẹn thành công");
+                                                setState(() {
+                                                  message.appointment!
+                                                      .isApproved = false;
+                                                });
+                                              },
+                                              child: const Text(
+                                                "Hủy",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            )
+                                          : const Text("Đã hủy",
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold)),
+                                      Visibility(
+                                        visible: canConfirm,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8),
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                                backgroundColor: Colors.green,
+                                                fixedSize: const Size(100, 20)),
+                                            onPressed: () async {
+                                              await ChatService()
+                                                  .changeStatusSchedule(
+                                                      message.appointment!.id!,
+                                                      true);
+                                              ErrorHelper.showError(
+                                                  message:
+                                                      "Xác nhận lịch hẹn thành công");
+                                              setState(() {
+                                                message.appointment!
+                                                    .isApproved = true;
+                                              });
+                                            },
+                                            child: const Text(
+                                              "Xác nhận",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   )
                                 ],
                               ),
                             )
                           ];
+                          var avt = message.senderAvt;
                           var chatComponent = <Widget>[
                             CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                  !message.messageType!
-                                      ? message.senderAvt
-                                      : message.receiverAvt),
+                              backgroundImage: NetworkImage(avt),
                             ),
                             const SizedBox(
                               width: 8,
@@ -308,6 +397,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           ];
                           if (!message.messageType!) {
                             chatComponent = chatComponent.reversed.toList();
+                            avt = message.receiverAvt;
                           }
                           return Container(
                             padding: const EdgeInsets.all(10),
@@ -316,11 +406,17 @@ class _ChatScreenState extends State<ChatScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: appointmentComponent,
                                   )
-                                : Row(
-                                    mainAxisAlignment: message.messageType!
-                                        ? MainAxisAlignment.start
-                                        : MainAxisAlignment.end,
-                                    children: chatComponent,
+                                : Column(
+                                    children: [
+                                      Text(DateTimeHelper.formatDateTime3(
+                                          message.createdAt)),
+                                      Row(
+                                        mainAxisAlignment: message.messageType!
+                                            ? MainAxisAlignment.start
+                                            : MainAxisAlignment.end,
+                                        children: chatComponent,
+                                      ),
+                                    ],
                                   ),
                           );
                         });
@@ -354,9 +450,11 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                       IconButton(
                         icon: const Icon(Icons.send),
-                        onPressed: () {
+                        onPressed: () async {
                           if (_controller.text.isNotEmpty) {
-                            sendMessage(_controller.text);
+                            await Provider.of<ChatProvider>(context,
+                                    listen: false)
+                                .sendMessage(_controller.text);
                           }
                           _controller.clear();
                         },

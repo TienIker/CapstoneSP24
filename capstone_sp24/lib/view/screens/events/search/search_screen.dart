@@ -52,8 +52,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       title: eventProvider.searchEvents[index].title,
                       dateTime: DateTimeHelper.formatDateTime(
                           eventProvider.searchEvents[index].timeOfEvent),
-                      location:
-                          eventProvider.searchEvents[index].location ?? "",
+                      address: eventProvider.searchEvents[index].address ?? "",
                       attendeeCount:
                           eventProvider.searchEvents[index].participantsCount,
                       onTap: () {

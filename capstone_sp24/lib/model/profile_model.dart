@@ -1,11 +1,9 @@
-import 'dart:math';
-
 class ProfileModel {
   final String userId;
   final String image;
   final String name;
   final String? description;
-  final int age;
+  final String age;
 
   ProfileModel({
     required this.userId,
@@ -20,8 +18,8 @@ class ProfileModel {
       userId: json["user_id"],
       image: json["profile_avatar"],
       name: json["user_name"],
-      age: Random().nextInt(30) + 15,
-      description: json["Bio"],
+      age: json["age"],
+      description: json["story"],
     );
   }
 }

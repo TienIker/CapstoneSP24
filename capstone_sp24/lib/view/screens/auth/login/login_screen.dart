@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/helper/keyboard.dart';
 import 'package:sharing_cafe/provider/account_provider.dart';
-import 'package:sharing_cafe/view/components/custom_surfix_icon.dart';
 import 'package:sharing_cafe/view/components/form_error.dart';
 import 'package:sharing_cafe/view/screens/auth/forgot_password/forgot_password_screen.dart';
 import 'package:sharing_cafe/view/screens/init_screen.dart';
@@ -43,16 +42,15 @@ class _LoginScreen extends State<LoginScreen> {
     }
   }
 
+  bool showText = false;
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final accountService = Provider.of<AccountProvider>(context);
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(""),
-      ),
       body: SafeArea(
         child: SizedBox(
           width: double.infinity,
@@ -104,17 +102,15 @@ class _LoginScreen extends State<LoginScreen> {
                           decoration: const InputDecoration(
                             //labelText: "Email",
                             hintText: "Email",
-                            // If  you are using latest version of flutter then lable text and hint text shown like this
-                            // if you r using flutter less then 1.20.* then maybe this is not working properly
                             floatingLabelBehavior: FloatingLabelBehavior.always,
-                            suffixIcon: CustomSurffixIcon(
-                                svgIcon: "assets/icons/Mail.svg"),
+                            // suffixIcon: CustomSurffixIcon(
+                            //     svgIcon: "assets/icons/Mail.svg"),
                           ),
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
                           controller: passwordController,
-                          obscureText: true,
+                          obscureText: showText ? false : true,
                           onSaved: (newValue) => password = newValue,
                           onChanged: (value) {
                             if (value.isNotEmpty) {
@@ -124,6 +120,7 @@ class _LoginScreen extends State<LoginScreen> {
                             }
                             return;
                           },
+                          obscuringCharacter: "*",
                           validator: (value) {
                             if (value!.isEmpty) {
                               addError(error: kPassNullError);
@@ -134,14 +131,18 @@ class _LoginScreen extends State<LoginScreen> {
                             }
                             return null;
                           },
-                          decoration: const InputDecoration(
-                            //abelText: "Password",
+                          decoration: InputDecoration(
                             hintText: "Mật khẩu",
-                            // If  you are using latest version of flutter then lable text and hint text shown like this
-                            // if you r using flutter less then 1.20.* then maybe this is not working properly
                             floatingLabelBehavior: FloatingLabelBehavior.always,
-                            suffixIcon: CustomSurffixIcon(
-                                svgIcon: "assets/icons/Lock.svg"),
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    showText = !showText;
+                                  });
+                                },
+                                icon: Icon(showText
+                                    ? Icons.visibility
+                                    : Icons.visibility_off)),
                           ),
                         ),
                         const SizedBox(height: 20),

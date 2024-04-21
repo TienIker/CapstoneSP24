@@ -1,9 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/provider/account_provider.dart';
-import 'package:sharing_cafe/view/components/custom_surfix_icon.dart';
 import 'package:sharing_cafe/view/components/form_error.dart';
-import 'package:sharing_cafe/view/screens/init_screen.dart';
+import 'package:sharing_cafe/view/screens/auth/complete_profile/complete_profile_screen.dart';
 
 import '../../../../constants.dart';
 
@@ -40,12 +41,15 @@ class _RegisterScreen extends State<RegisterScreen> {
     }
   }
 
+  bool showText = false;
+  bool showTextConfirm = false;
+  final TextEditingController userNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final accountService = Provider.of<AccountProvider>(context);
-    final TextEditingController userNameController = TextEditingController();
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         title: const Text(""),
@@ -89,8 +93,6 @@ class _RegisterScreen extends State<RegisterScreen> {
                             //labelText: "Full Name",
                             hintText: "Họ và tên",
                             floatingLabelBehavior: FloatingLabelBehavior.always,
-                            suffixIcon: CustomSurffixIcon(
-                                svgIcon: "assets/icons/User.svg"),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -120,14 +122,12 @@ class _RegisterScreen extends State<RegisterScreen> {
                             //labelText: "Email",
                             hintText: "Email",
                             floatingLabelBehavior: FloatingLabelBehavior.always,
-                            suffixIcon: CustomSurffixIcon(
-                                svgIcon: "assets/icons/Mail.svg"),
                           ),
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
                           controller: passwordController,
-                          obscureText: true,
+                          obscureText: showText ? false : true,
                           onSaved: (newValue) => password = newValue,
                           onChanged: (value) {
                             if (value.isNotEmpty) {
@@ -147,17 +147,23 @@ class _RegisterScreen extends State<RegisterScreen> {
                             }
                             return null;
                           },
-                          decoration: const InputDecoration(
-                            //labelText: "Password",
+                          decoration: InputDecoration(
                             hintText: "Mật khẩu",
                             floatingLabelBehavior: FloatingLabelBehavior.always,
-                            suffixIcon: CustomSurffixIcon(
-                                svgIcon: "assets/icons/Lock.svg"),
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    showText = !showText;
+                                  });
+                                },
+                                icon: Icon(showText
+                                    ? Icons.visibility
+                                    : Icons.visibility_off)),
                           ),
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
-                          obscureText: true,
+                          obscureText: showTextConfirm ? false : true,
                           onSaved: (newValue) => confirmPassword = newValue,
                           onChanged: (value) {
                             if (value.isNotEmpty) {
@@ -178,12 +184,18 @@ class _RegisterScreen extends State<RegisterScreen> {
                             }
                             return null;
                           },
-                          decoration: const InputDecoration(
-                            //labelText: "Confirm Password",
+                          decoration: InputDecoration(
                             hintText: "Xác nhận mật khẩu",
                             floatingLabelBehavior: FloatingLabelBehavior.always,
-                            suffixIcon: CustomSurffixIcon(
-                                svgIcon: "assets/icons/Lock.svg"),
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    showTextConfirm = !showTextConfirm;
+                                  });
+                                },
+                                icon: Icon(showTextConfirm
+                                    ? Icons.visibility
+                                    : Icons.visibility_off)),
                           ),
                         ),
                         FormError(errors: errors),
@@ -199,7 +211,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     passwordController.text.toString());
                                 // if all are valid then go to success screen
                                 Navigator.pushNamed(
-                                    context, InitScreen.routeName);
+                                    context, CompleteProfileScreen.routeName);
                               }
                             },
                             child: const Text("Tiếp tục"),

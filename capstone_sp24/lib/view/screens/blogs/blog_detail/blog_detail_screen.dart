@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
+import 'package:sharing_cafe/model/comment_model.dart';
 import 'package:sharing_cafe/provider/blog_provider.dart';
+import 'package:sharing_cafe/service/blog_service.dart';
 import 'package:sharing_cafe/view/components/form_field.dart';
 import 'package:sharing_cafe/view/screens/blogs/blog_detail/components/comment.dart';
 
@@ -15,27 +17,10 @@ class BlogDetailScreen extends StatefulWidget {
 }
 
 class _BlogDetailScreenState extends State<BlogDetailScreen> {
-  final String title = 'Top 5 điểm đến du lịch hàng đầu năm 2024!';
-
-  final String avtUrl = 'https://picsum.photos/id/433/200/300';
-
-  final String ownerName = 'Nguyễn Mai An';
-
-  final String category = 'Du lịch';
-
-  final String time = '3 ngày trước';
-
-  final String content = """
-            <div>
-              <p>Năm 2024 sắp đến gần và cùng với đó là cơ hội để khám phá những địa điểm mới, thử những món ăn mới và gặp gỡ những người mới. Cho dù bạn là một du khách dày dạn kinh nghiệm hay một người mới, thì có rất nhiều điểm đến sẽ khiến trái tim bạn rung động. Dưới đây là 5 điểm đến du lịch hàng đầu cho năm 2024:</p>
-              <h1>1. Hy Lạp</h1>
-              <p>Từ những tàn tích cổ xưa của Athens đến những bãi biển tuyệt đẹp ở Santorini, Hy Lạp đều có thứ gì đó dành cho tất cả mọi người. Và với ngành khách sạn của đất nước đang trên đà phục hồi, bây giờ là thời điểm tuyệt vời để ghé thăm.</p>
-            </div>
-          """;
-
-  final int numberOfComment = 250;
-
   bool _isLoading = false;
+
+  final TextEditingController _contentEditingController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -54,6 +39,19 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
             }));
 
     super.initState();
+  }
+
+  String howOldFrom(DateTime createdAt) {
+    var diff = DateTime.now().difference(createdAt);
+    if (diff.inDays > 0) {
+      return "${diff.inDays} ngày trước";
+    } else if (diff.inHours > 0) {
+      return "${diff.inHours} giờ trước";
+    } else if (diff.inMinutes > 0) {
+      return "${diff.inMinutes} phút trước";
+    } else {
+      return "vài giây trước";
+    }
   }
 
   @override
@@ -118,7 +116,8 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                                         borderRadius: const BorderRadius.all(
                                             Radius.circular(100.0)),
                                         child: Image.network(
-                                          blog.image,
+                                          blog.ownerAvatar ??
+                                              "https://picsum.photos/id/233/200/300",
                                           height: 64.0,
                                           width: 64.0,
                                           fit: BoxFit.cover,
@@ -168,7 +167,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                                         width: 16,
                                       ),
                                       Text(
-                                        time,
+                                        howOldFrom(blog.createdAt),
                                         style:
                                             TextStyle(color: Colors.grey[600]),
                                       )
@@ -177,51 +176,79 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 Html(data: blog.content),
-                                Text(
-                                  "Bình luận (${blog.commentsCount})",
-                                  style: headingStyle,
-                                ),
-                                const Comment(
-                                    avtUrl:
-                                        'https://picsum.photos/id/563/200/300',
-                                    name: "Mai Anh Xuân",
-                                    content:
-                                        "Bài báo tuyệt vời! Tôi đã đến một vài điểm đến trong số này và rất nóng lòng được bổ sung thêm những điểm đến khác vào danh sách của mình ❤",
-                                    isLiked: true,
-                                    numberOfLikes: 354,
-                                    time: "1 tháng trước"),
-                                const Comment(
-                                    avtUrl:
-                                        'https://picsum.photos/id/321/200/300',
-                                    name: "Đỗ Duy Nam",
-                                    content:
-                                        "Cảm ơn những lời khuyên và khuyến nghị! Tôi chắc chắn sẽ ghi nhớ những điều này cho chuyến đi tiếp theo của mình 🔥🔥",
-                                    isLiked: false,
-                                    numberOfLikes: 123,
-                                    time: "2 tháng trước"),
+                                FutureBuilder(
+                                    future:
+                                        BlogService().loadComment(blog.blogId),
+                                    builder: (context, snapshot) {
+                                      var comments = snapshot.data == null
+                                          ? []
+                                          : snapshot.data as List<CommentModel>;
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Bình luận (${comments.length})",
+                                            style: headingStyle,
+                                          ),
+                                          ListView.builder(
+                                              itemCount: comments.length,
+                                              shrinkWrap: true,
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              itemBuilder: (context, index) {
+                                                return Comment(
+                                                    avtUrl: comments[index]
+                                                        .profileAvatar,
+                                                    name: comments[index]
+                                                        .userName,
+                                                    content:
+                                                        comments[index].content,
+                                                    isLiked: false,
+                                                    numberOfLikes: 0,
+                                                    time: "");
+                                              })
+                                        ],
+                                      );
+                                    }),
                                 const SizedBox(
                                   height: 8,
                                 ),
                                 Row(
                                   children: [
-                                    ClipRRect(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(100.0)),
-                                      child: Image.network(
-                                        blog.image,
-                                        height: 48,
-                                        width: 48,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 16,
-                                    ),
-                                    const Expanded(
+                                    // ClipRRect(
+                                    //   borderRadius: const BorderRadius.all(
+                                    //       Radius.circular(100.0)),
+                                    //   child: Image.network(
+                                    //     blog.ownerAvatar ??
+                                    //         "https://picsum.photos/id/233/200/300",
+                                    //     height: 48,
+                                    //     width: 48,
+                                    //     fit: BoxFit.cover,
+                                    //   ),
+                                    // ),
+                                    // const SizedBox(
+                                    //   width: 16,
+                                    // ),
+                                    Expanded(
                                         child: KFormField(
-                                            hintText: "Viết bình luận...")),
+                                      hintText: "Viết bình luận...",
+                                      controller: _contentEditingController,
+                                    )),
                                     IconButton(
-                                        onPressed: () {},
+                                        onPressed: () async {
+                                          if (_contentEditingController
+                                              .text.isNotEmpty) {
+                                            await BlogService().createComment(
+                                                blogId: blog.blogId,
+                                                content:
+                                                    _contentEditingController
+                                                        .text);
+                                            setState(() {
+                                              _contentEditingController.clear();
+                                            });
+                                          }
+                                        },
                                         icon: const Icon(
                                           Icons.send,
                                           color: kPrimaryColor,

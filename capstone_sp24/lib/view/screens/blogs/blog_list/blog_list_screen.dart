@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/helper/datetime_helper.dart';
 import 'package:sharing_cafe/provider/blog_provider.dart';
+import 'package:sharing_cafe/provider/interest_provider.dart';
 import 'package:sharing_cafe/view/screens/blogs/all_blog/all_blog_screen.dart';
 import 'package:sharing_cafe/view/screens/blogs/blog_categories.dart/blog_categories_screen.dart';
 import 'package:sharing_cafe/view/screens/blogs/blog_category.dart/blog_category_screen.dart';
@@ -63,7 +64,7 @@ class _BlogListScreenState extends State<BlogListScreen> {
             const SizedBox(
               width: 8,
             ),
-            const Text('Blog', style: heading2Style),
+            Text('Blog', style: heading2Style.copyWith(color: kPrimaryColor)),
           ],
         ),
         actions: [
@@ -116,8 +117,9 @@ class _BlogListScreenState extends State<BlogListScreen> {
                             title: blog.title,
                             dateTime:
                                 DateTimeHelper.formatDateTime(blog.createdAt),
-                            avtUrl: 'https://picsum.photos/id/200/200/300',
-                            ownerName: "Thịnh",
+                            avtUrl: blog.ownerAvatar ??
+                                'https://picsum.photos/id/200/200/300',
+                            ownerName: blog.ownerName,
                             time: howOldFrom(blog.createdAt),
                             onTap: () {
                               Navigator.pushNamed(
@@ -157,37 +159,39 @@ class _BlogListScreenState extends State<BlogListScreen> {
                     ),
                     SizedBox(
                       height: 128,
-                      child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: <Widget>[
-                            BlogCard3(
-                              imageUrl: 'https://picsum.photos/id/23/200/300',
-                              title: 'Du lịch',
-                              number: 323,
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, BlogCategoryScreen.routeName);
-                              },
-                            ),
-                            BlogCard3(
-                              imageUrl: 'https://picsum.photos/id/43/200/300',
-                              title: 'Sức khỏe',
-                              number: 323,
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, BlogCategoryScreen.routeName);
-                              },
-                            ),
-                            BlogCard3(
-                              imageUrl: 'https://picsum.photos/id/54/200/300',
-                              title: 'Đời sống',
-                              number: 323,
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, BlogCategoryScreen.routeName);
-                              },
-                            ),
-                          ]),
+                      child: Consumer<InterestProvider>(
+                        builder: (context, value, child) {
+                          var interests = value.listInterestsParent;
+                          if (interests.isEmpty) {
+                            value.getListInterestsParent();
+                            return const Center(
+                              child: CircularProgressIndicator.adaptive(),
+                            );
+                          }
+                          return ListView.builder(
+                            itemCount: interests.length,
+                            itemBuilder: (context, index) {
+                              return BlogCard3(
+                                imageUrl: interests[index].imageUrl,
+                                title: interests[index].name,
+                                number: interests[index].numOfBlog,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, BlogCategoryScreen.routeName,
+                                      arguments: {
+                                        "interestId":
+                                            interests[index].interestId,
+                                        "imageUrl": interests[index].imageUrl,
+                                        "title": interests[index].name,
+                                        "number": interests[index].numOfBlog,
+                                      });
+                                },
+                              );
+                            },
+                            scrollDirection: Axis.horizontal,
+                          );
+                        },
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -225,8 +229,9 @@ class _BlogListScreenState extends State<BlogListScreen> {
                           title: blog.title,
                           dateTime:
                               DateTimeHelper.formatDateTime(blog.createdAt),
-                          avtUrl: 'https://picsum.photos/id/200/200/300',
-                          ownerName: "Thịnh",
+                          avtUrl: blog.ownerAvatar ??
+                              'https://picsum.photos/id/200/200/300',
+                          ownerName: blog.ownerName,
                           time: howOldFrom(blog.createdAt),
                           onTap: () {
                             Navigator.pushNamed(

@@ -3,7 +3,7 @@ import 'package:sharing_cafe/helper/datetime_helper.dart';
 class BlogModel {
   final String blogId;
   final String userId;
-  final String content;
+  final String? content;
   final int likesCount;
   final int commentsCount;
   final bool isApprove;
@@ -11,6 +11,7 @@ class BlogModel {
   final String image;
   final String title;
   final String ownerName;
+  final String? ownerAvatar;
   final String category;
 
   BlogModel({
@@ -25,6 +26,7 @@ class BlogModel {
     required this.title,
     required this.ownerName,
     required this.category,
+    this.ownerAvatar,
   });
 
   factory BlogModel.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class BlogModel {
       title: json["title"],
       ownerName: json['user_name'],
       category: json['name'],
+      ownerAvatar: json['profile_avatar'],
     );
   }
 }

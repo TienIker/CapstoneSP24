@@ -83,8 +83,8 @@ class EventService {
 
   Future<List<EventModel>> getMyEvents() async {
     try {
-      var userId = await SharedPrefHelper.getUserId();
-      var response = await ApiHelper().get('/user/events/$userId');
+      // var userId = await SharedPrefHelper.getUserId();
+      var response = await ApiHelper().get('/auth/user/my-event');
       if (response.statusCode == HttpStatus.ok) {
         var jsonList = json.decode(response.body) as List;
         return jsonList
@@ -102,12 +102,14 @@ class EventService {
   }
 
   Future<bool> createEvent({
-    String? title,
-    String? interestId,
-    String? description,
-    String? timeOfEvent,
-    String? location,
-    String? backgroundImage,
+    required String title,
+    required String interestId,
+    required String description,
+    required String timeOfEvent,
+    required String location,
+    required String backgroundImage,
+    required String endOfEvent,
+    required String address,
   }) async {
     try {
       var endpoint = "/event";
@@ -120,6 +122,8 @@ class EventService {
         "time_of_event": timeOfEvent,
         "location": location,
         "background_img": backgroundImage,
+        "end_of_event": endOfEvent,
+        "address": address,
       };
       var response = await ApiHelper().post(endpoint, data);
       if (response.statusCode == HttpStatus.ok) {
@@ -127,6 +131,43 @@ class EventService {
       }
       ErrorHelper.showError(
           message: "Lỗi ${response.statusCode}: Không thể tạo sự kiện");
+    } catch (e) {
+      print(e);
+    }
+    return false;
+  }
+
+  Future updateEvent({
+    required String eventId,
+    required String title,
+    required String interestId,
+    required String description,
+    required String timeOfEvent,
+    required String location,
+    required String backgroundImage,
+    required String endOfEvent,
+    required String address,
+  }) async {
+    try {
+      var endpoint = "/event/$eventId";
+      var userId = await SharedPrefHelper.getUserId();
+      var data = {
+        "organizer_id": userId,
+        "interest_id": interestId,
+        "title": title,
+        "description": description,
+        "time_of_event": timeOfEvent,
+        "location": location,
+        "background_img": backgroundImage,
+        "end_of_event": endOfEvent,
+        "address": address,
+      };
+      var response = await ApiHelper().put(endpoint, data);
+      if (response.statusCode == HttpStatus.ok) {
+        return true;
+      }
+      ErrorHelper.showError(
+          message: "Lỗi ${response.statusCode}: Không thể cập nhật sự kiện");
     } catch (e) {
       print(e);
     }

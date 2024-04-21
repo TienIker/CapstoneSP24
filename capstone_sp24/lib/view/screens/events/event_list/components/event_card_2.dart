@@ -5,7 +5,7 @@ class EventCard2 extends StatelessWidget {
   final String imageUrl;
   final String title;
   final String dateTime;
-  final String location;
+  final String address;
   final int attendeeCount;
   final Function() onTap;
 
@@ -14,7 +14,7 @@ class EventCard2 extends StatelessWidget {
     required this.imageUrl,
     required this.title,
     required this.dateTime,
-    required this.location,
+    required this.address,
     required this.attendeeCount,
     required this.onTap,
   });
@@ -74,7 +74,7 @@ class EventCard2 extends StatelessWidget {
                           ),
                           Expanded(
                             child: Text(
-                              location,
+                              address,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 color: Colors.grey[600],

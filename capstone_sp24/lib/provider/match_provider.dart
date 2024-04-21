@@ -3,17 +3,20 @@
 import 'package:flutter/material.dart';
 import 'package:sharing_cafe/enums.dart';
 import 'package:sharing_cafe/helper/error_helper.dart';
+import 'package:sharing_cafe/model/profile_info_model.dart';
 import 'package:sharing_cafe/model/profile_model.dart';
 import 'package:sharing_cafe/service/match_service.dart';
 
 class MatchProvider extends ChangeNotifier {
   List<ProfileModel> _profiles = [];
   ProfileModel? _currentProfile;
+  ProfileInfoModel? _info;
   final int _limit = 5;
   final int _offset = 0;
 
   List<ProfileModel> get profiles => _profiles;
   ProfileModel? get currentProfile => _currentProfile;
+  ProfileInfoModel? get info => _info;
 
   Future initListProfiles() async {
     _profiles = await MatchService().getListProfiles(_limit, _offset);
@@ -45,6 +48,17 @@ class MatchProvider extends ChangeNotifier {
 
   setCurrentProfileByIndex(int index) {
     _currentProfile = profiles[index];
+  }
+
+  Future<ProfileInfoModel?> getProfileInfo() async {
+    try {
+      var userId = _currentProfile!.userId;
+      _info = await MatchService().getProfileInfo(userId);
+      return _info;
+    } on Exception catch (e) {
+      ErrorHelper.showError(message: e.toString());
+    }
+    return null;
   }
 
   // Private methods

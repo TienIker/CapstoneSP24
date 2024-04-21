@@ -4,12 +4,16 @@ import 'package:sharing_cafe/constants.dart';
 class KFormField extends StatelessWidget {
   final String? hintText;
   final int? maxLines;
+  final String? value;
   final Function(String)? onChanged;
+  final TextEditingController? controller;
   const KFormField({
     super.key,
     required this.hintText,
     this.maxLines = 1,
     this.onChanged,
+    this.value,
+    this.controller,
   });
 
   @override
@@ -20,6 +24,7 @@ class KFormField extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: TextFormField(
+        controller: controller,
         decoration: InputDecoration(
             hintText: hintText,
             contentPadding: const EdgeInsets.all(16),

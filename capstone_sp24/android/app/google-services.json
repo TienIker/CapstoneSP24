@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "11188755522",
+    "project_id": "sharing-coffee",
+    "storage_bucket": "sharing-coffee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:11188755522:android:11913d2ee0c35502e3a1db",
+        "android_client_info": {
+          "package_name": "com.example.sharing_cafe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALqUwwaucN6triDlWZS2IFSAvcxKyhZ9Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

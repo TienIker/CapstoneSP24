@@ -71,44 +71,65 @@ class EventProvider extends ChangeNotifier {
     }
   }
 
-  Future createEvent({
-    String? title,
-    String? interestId,
-    String? description,
-    String? timeOfEvent,
-    String? location,
-    String? backgroundImage,
+  Future createOrUpdateEvent({
+    required String title,
+    required String interestId,
+    required String description,
+    required String timeOfEvent,
+    required String location,
+    required String backgroundImage,
+    String? eventId,
+    required String endOfEvent,
+    required String address,
   }) async {
     try {
       // Validate Title
-      if (title == null || title.isEmpty) {
+      if (title.isEmpty) {
         throw ArgumentError('Tiêu đề là bắt buộc và không được để trống.');
       }
 
       // Validate Interest ID
-      if (interestId == null || interestId.isEmpty) {
+      if (interestId.isEmpty) {
         throw ArgumentError('Chủ đề là bắt buộc và không được để trống.');
       }
 
       // Validate Description
-      if (description == null || description.isEmpty) {
+      if (description.isEmpty) {
         throw ArgumentError('Mô tả là bắt buộc và không được để trống.');
       }
 
       // Validate Time of Event
-      if (timeOfEvent == null || timeOfEvent.isEmpty) {
+      if (timeOfEvent.isEmpty) {
         throw ArgumentError(
             'Thời gian sự kiện là bắt buộc và không được để trống.');
       }
 
       // Validate Location
-      if (location == null || location.isEmpty) {
-        throw ArgumentError('Địa điểm là bắt buộc và không được để trống.');
+      if (location.isEmpty) {
+        throw ArgumentError(
+            'Địa điểm tổ chức là bắt buộc và không được để trống.');
       }
 
       // Validate Background Image
-      if (backgroundImage == null || backgroundImage.isEmpty) {
+      if (backgroundImage.isEmpty) {
         throw ArgumentError('Ảnh bìa là bắt buộc và không được để trống.');
+      }
+
+      if (address.isEmpty) {
+        throw ArgumentError('Địa chỉ là bắt buộc và không được để trống.');
+      }
+      if (eventId != null) {
+        return await EventService().updateEvent(
+          eventId: eventId,
+          title: title,
+          interestId: interestId,
+          description: description,
+          timeOfEvent: timeOfEvent,
+          location: location,
+          backgroundImage: backgroundImage,
+          endOfEvent: endOfEvent,
+          address: address,
+        );
       }
 
       return await EventService().createEvent(
@@ -118,6 +139,8 @@ class EventProvider extends ChangeNotifier {
         timeOfEvent: timeOfEvent,
         location: location,
         backgroundImage: backgroundImage,
+        endOfEvent: endOfEvent,
+        address: address,
       );
     } catch (e) {
       if (e is ArgumentError) {
@@ -127,4 +150,6 @@ class EventProvider extends ChangeNotifier {
       }
     }
   }
+
+  deleteEvent(String eventId) {}
 }
