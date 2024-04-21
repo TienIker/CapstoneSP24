@@ -5,6 +5,7 @@ import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/enums.dart';
 import 'package:sharing_cafe/provider/match_provider.dart';
 import 'package:sharing_cafe/view/screens/friends/friends_screen.dart';
+import 'package:sharing_cafe/view/screens/friends/pending_screen.dart';
 import 'package:sharing_cafe/view/screens/matching/components/profile_card.dart';
 
 class SwipeScreen extends StatefulWidget {
@@ -48,6 +49,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    GlobalKey filterButtonKey = GlobalKey();
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -64,6 +66,49 @@ class _SwipeScreenState extends State<SwipeScreen> {
           ],
         ),
         actions: [
+          //filter
+          IconButton(
+            icon: const Icon(Icons.filter_alt_outlined),
+            key: filterButtonKey,
+            onPressed: () {
+              // Get the RenderBox object
+              final RenderBox renderBox = filterButtonKey.currentContext
+                  ?.findRenderObject() as RenderBox;
+              final Offset offset = renderBox.localToGlobal(Offset.zero);
+
+              // Calculate the position for the menu
+              final RelativeRect position = RelativeRect.fromLTRB(
+                  offset.dx, // This is the left position.
+                  offset.dy, // This is the top position.
+                  30, // This is the right position (not used here).
+                  0 // This is the bottom position (not used here).
+                  );
+              showMenu(
+                context: context,
+                position: position,
+                items: [
+                  PopupMenuItem(
+                    value: "age",
+                    onTap: () {},
+                    child: const Text("Theo tuổi"),
+                  ),
+                  PopupMenuItem(
+                    value: "distance",
+                    onTap: () {},
+                    child: const Text(
+                      "Theo khoảng cách",
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.pending_actions),
+            onPressed: () {
+              Navigator.pushNamed(context, PendingScreen.routeName);
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.supervisor_account),
             onPressed: () {

@@ -7,8 +7,8 @@ class FriendsProvider extends ChangeNotifier {
 
   List<MatchedModel> get friends => _friends;
 
-  Future getListFriends() async {
-    _friends = await MatchService().getListFriends();
+  Future getListFriends({bool pending = false}) async {
+    _friends = await MatchService().getListFriends(pending: pending);
     notifyListeners();
   }
 }

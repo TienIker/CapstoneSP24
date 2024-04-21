@@ -16,10 +16,10 @@ class ProfileModel {
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
       userId: json["user_id"],
-      image: json["profile_avatar"],
+      image: json["profile_avatar"] ?? "",
       name: json["user_name"],
-      age: json["age"],
-      description: json["story"],
+      age: json["age"] ?? "",
+      description: json["story"] ?? "",
     );
   }
 }
