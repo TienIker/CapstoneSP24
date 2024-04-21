@@ -6,6 +6,7 @@ import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/helper/keyboard.dart';
 import 'package:sharing_cafe/provider/account_provider.dart';
 import 'package:sharing_cafe/view/components/form_error.dart';
+import 'package:sharing_cafe/view/screens/auth/confirm_email/confirm_email_screen.dart';
 import 'package:sharing_cafe/view/screens/auth/forgot_password/forgot_password_screen.dart';
 import 'package:sharing_cafe/view/screens/init_screen.dart';
 
@@ -184,8 +185,22 @@ class _LoginScreen extends State<LoginScreen> {
                               } catch (e) {
                                 return;
                               }
-                              Navigator.pushNamedAndRemoveUntil(context,
-                                  InitScreen.routeName, (route) => false);
+                              var isConfirm =
+                                  await accountService.confirmVerificationEmail(
+                                      emailController.text,
+                                      passwordController.text);
+                              // if all are valid then go to success screen
+                              if (isConfirm) {
+                                Navigator.pushNamedAndRemoveUntil(context,
+                                    InitScreen.routeName, (route) => false);
+                              } else {
+                                Navigator.pushNamed(
+                                    context, ConfirmEmailScreen.routeName,
+                                    arguments: {
+                                      "email": emailController.text,
+                                      "password": passwordController.text
+                                    });
+                              }
                             }
                           },
                           child: const Text("Đăng nhập"),

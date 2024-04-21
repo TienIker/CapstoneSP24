@@ -84,4 +84,22 @@ class AccountService {
     }
     return false;
   }
+
+  Future<bool> confirmVerificationEmail(email, password) async {
+    var endpoint =
+        "/user/confirmVerificationEmail?email=$email&password=$password";
+    try {
+      var response = await ApiHelper().get(endpoint);
+      if (response.statusCode == HttpStatus.ok) {
+        var json = jsonDecode(response.body);
+        return json["result"];
+      }
+      var message = "Lỗi ${response.statusCode}: Không thể xác thực email";
+      ErrorHelper.showError(message: message);
+      throw Exception(message);
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
 }

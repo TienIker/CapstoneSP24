@@ -57,6 +57,10 @@ class AccountProvider extends ChangeNotifier {
     return token;
   }
 
+  Future<bool> confirmVerificationEmail(email, password) {
+    return AccountService().confirmVerificationEmail(email, password);
+  }
+
   Future completeUserProfile({
     required String? profileAvatar,
     required String? age,

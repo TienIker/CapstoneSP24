@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:sharing_cafe/provider/account_provider.dart';
 import 'package:sharing_cafe/view/components/form_error.dart';
 import 'package:sharing_cafe/view/screens/auth/complete_profile/complete_profile_screen.dart';
+import 'package:sharing_cafe/view/screens/auth/confirm_email/confirm_email_screen.dart';
 
 import '../../../../constants.dart';
 
@@ -202,16 +203,33 @@ class _RegisterScreen extends State<RegisterScreen> {
                         const SizedBox(height: 20),
                         Consumer<AccountProvider>(
                           builder: (context, auth, child) => ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 _formKey.currentState!.save();
-                                accountService.register(
+                                await accountService.register(
                                     userNameController.text.toString(),
                                     emailController.text.toString(),
                                     passwordController.text.toString());
-                                // if all are valid then go to success screen
-                                Navigator.pushNamed(
-                                    context, CompleteProfileScreen.routeName);
+                                try {
+                                  var isConfirm = await accountService
+                                      .confirmVerificationEmail(
+                                          emailController.text,
+                                          passwordController.text);
+                                  // if all are valid then go to success screen
+                                  if (isConfirm) {
+                                    Navigator.pushNamed(context,
+                                        CompleteProfileScreen.routeName);
+                                  } else {
+                                    Navigator.pushNamed(
+                                        context, ConfirmEmailScreen.routeName,
+                                        arguments: {
+                                          "email": emailController.text,
+                                          "password": passwordController.text
+                                        });
+                                  }
+                                } catch (e) {
+                                  return;
+                                }
                               }
                             },
                             child: const Text("Tiếp tục"),

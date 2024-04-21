@@ -15,6 +15,8 @@ import 'package:sharing_cafe/provider/interest_provider.dart';
 import 'package:sharing_cafe/provider/user_profile_provider.dart';
 import 'package:sharing_cafe/service/location_service.dart';
 import 'package:sharing_cafe/view/screens/auth/login/login_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'routes.dart';
 import 'theme.dart';
@@ -22,6 +24,9 @@ import 'theme.dart';
 void main() async {
   // initialize firebase
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await FirebaseMessaging.instance.requestPermission();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
