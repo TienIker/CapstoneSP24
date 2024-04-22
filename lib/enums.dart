@@ -10,3 +10,22 @@ enum MatchStatus {
   final String label;
   const MatchStatus({required this.label});
 }
+
+enum NotificationStatus {
+  unread(label: "NEW"),
+  read(label: "READED");
+
+  final String label;
+  const NotificationStatus({required this.label});
+
+  static NotificationStatus fromString(String status) {
+    switch (status) {
+      case "NEW":
+        return NotificationStatus.unread;
+      case "READED":
+        return NotificationStatus.read;
+      default:
+        return NotificationStatus.unread;
+    }
+  }
+}

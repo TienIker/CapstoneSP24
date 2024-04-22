@@ -10,9 +10,10 @@ import 'package:sharing_cafe/model/user_profile_model.dart';
 class UserProfileService {
   Future<UserProfileModel?> getUserProfile() async {
     try {
-      var response = await ApiHelper().get('/auth/user/profile/');
+      var response = await ApiHelper().get('/auth/user/profile');
       if (response.statusCode == HttpStatus.ok) {
-        return UserProfileModel.fromJson(json.decode(response.body));
+        var res = UserProfileModel.fromJson(json.decode(response.body));
+        return res;
       } else {
         ErrorHelper.showError(
             message: "Lỗi ${response.statusCode}: Không thể lấy thông tin");

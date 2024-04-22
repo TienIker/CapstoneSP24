@@ -85,10 +85,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           style: Theme.of(context).textTheme.bodyMedium),
                       const SizedBox(height: 20),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
-                            width: 200,
+                            width: 140,
                             child: ElevatedButton(
                               onPressed: () {
                                 Navigator.pushNamed(
@@ -99,11 +99,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   side: BorderSide.none,
                                   shape: const StadiumBorder()),
                               child: const Text("Chỉnh sửa",
-                                  style: TextStyle(color: Colors.white)),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
                             ),
                           ),
+                          const SizedBox(
+                            width: 16,
+                          ),
                           SizedBox(
-                            width: 200,
+                            width: 140,
                             child: ElevatedButton(
                               onPressed: () {
                                 Navigator.pushNamed(
@@ -114,7 +119,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   side: BorderSide.none,
                                   shape: const StadiumBorder()),
                               child: const Text("Xem trước",
-                                  style: TextStyle(color: Colors.white)),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
                             ),
                           ),
                         ],
