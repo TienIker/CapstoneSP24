@@ -78,21 +78,35 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     });
     Provider.of<UserProfileProvider>(context, listen: false)
         .getUserProfile()
-        .then((value) {
-      setState(() {
-        if (value != null) {
-          _userNameController.text = value.userName;
-          _imageUrl = value.profileAvatar;
-          _age = value.age;
-          _storyController.text = value.story!;
-          _gender = value.gender;
-          if (value.purpose != null) {
-            _purposeController.text = value.purpose!;
-          }
-          if (value.favoriteLocation != null) {
-            _favoriteLocationController.text = value.favoriteLocation!;
-          }
+        .then((value) async {
+      if (value != null) {
+        var provinces = await LocationService().getProvince();
+        var province = provinces
+            .where(
+                (element) => element.province == value.address.split(', ')[1])
+            .firstOrNull;
+        if (province != null) {
+          provinceId = province.provinceId;
         }
+        _userNameController.text = value.userName;
+        _imageUrl = value.profileAvatar;
+        _age = value.age;
+        _addressProvince = province;
+        _addressDistrict = await LocationService().getDistrict(provinceId).then(
+            (v) => v
+                .where((element) =>
+                    element.fullName == value.address.split(', ')[0])
+                .firstOrNull);
+        _storyController.text = value.story!;
+        _gender = value.gender;
+        if (value.purpose != null) {
+          _purposeController.text = value.purpose!;
+        }
+        if (value.favoriteLocation != null) {
+          _favoriteLocationController.text = value.favoriteLocation!;
+        }
+      }
+      setState(() {
         _isLoading = false;
       });
     });
