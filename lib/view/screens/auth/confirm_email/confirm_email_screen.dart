@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/service/account_service.dart';
-import 'package:sharing_cafe/view/screens/init_screen.dart';
+import 'package:sharing_cafe/view/screens/auth/complete_profile/complete_profile_screen.dart';
 
 class ConfirmEmailScreen extends StatefulWidget {
   static String routeName = "/confirmEmail";
@@ -52,8 +52,7 @@ class _ConfirmEmailScreenState extends State<ConfirmEmailScreen> {
                       content: Text("Xác thực thành công"),
                     ),
                   );
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, InitScreen.routeName, (route) => false);
+                  Navigator.pushNamed(context, CompleteProfileScreen.routeName);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(

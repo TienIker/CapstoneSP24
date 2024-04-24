@@ -144,8 +144,8 @@ class _SelectInterestScreen extends State<SelectInterestScreen> {
                                 } catch (e) {
                                   return;
                                 }
-                                Navigator.pushNamed(
-                                    context, InitScreen.routeName);
+                                Navigator.pushNamedAndRemoveUntil(context,
+                                    InitScreen.routeName, (route) => false);
                               },
                               child: const Text("Đăng ký"),
                             ),
