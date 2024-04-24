@@ -71,7 +71,7 @@ class AccountProvider extends ChangeNotifier {
   }) async {
     try {
       if (profileAvatar == null || profileAvatar.isEmpty) {
-        throw ArgumentError('Tuổi là bắt buộc và không được để trống.');
+        throw ArgumentError('Hình ảnh là bắt buộc và không được để trống.');
       }
       if (age == null || age.isEmpty) {
         throw ArgumentError('Tuổi là bắt buộc và không được để trống.');

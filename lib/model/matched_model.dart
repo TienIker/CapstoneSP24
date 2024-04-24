@@ -19,7 +19,7 @@ class MatchedModel {
     return MatchedModel(
       userId: json['user_id'],
       userName: json['user_name'],
-      profileAvatar: json['profile_avatar'],
+      profileAvatar: json['profile_avatar'] ?? "",
       bio: json['Bio'] ?? '',
       isAvailable: json['is_available'],
       userMatchStatus: json['user_match_status'],
