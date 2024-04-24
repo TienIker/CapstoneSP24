@@ -8,6 +8,7 @@ import 'package:sharing_cafe/view/screens/blogs/blog_detail/blog_detail_screen.d
 
 import 'package:sharing_cafe/view/screens/home/components/blog_card.dart';
 import 'package:sharing_cafe/view/screens/events/event_detail/event_detail_screen.dart';
+//import 'package:sharing_cafe/view/screens/home/components/matching_banner.dart';
 import 'package:sharing_cafe/view/screens/home/components/event_card_2.dart';
 import 'package:sharing_cafe/view/screens/notification/notification_screen.dart';
 
@@ -115,13 +116,8 @@ class _HomeScreen extends State<HomeScreen> {
                 FutureBuilder(
                   future: WeatherHelper().getWeather(),
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator.adaptive(),
-                      );
-                    }
                     if (snapshot.hasError || snapshot.data == null) {
-                      return const Text("Không thể lấy thông tin thời tiết");
+                      return Container();
                     }
                     var weatherData = snapshot.data;
                     return Container(

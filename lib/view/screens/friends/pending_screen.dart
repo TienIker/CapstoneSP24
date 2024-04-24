@@ -202,11 +202,11 @@ class _PendingScreenState extends State<PendingScreen> {
                                                                   backgroundColor:
                                                                       Colors
                                                                           .white,
-                                                                  child: const Icon(
-                                                                      Icons
-                                                                          .favorite,
-                                                                      color: Colors
-                                                                          .green),
+                                                                  child: Image
+                                                                      .asset(
+                                                                    'assets/images/cafe.png',
+                                                                    height: 20,
+                                                                  ),
                                                                 ),
                                                               ],
                                                             ),
