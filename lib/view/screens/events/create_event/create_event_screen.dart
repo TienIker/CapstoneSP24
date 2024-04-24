@@ -225,6 +225,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         _isUploading = false;
                       });
                       if (result == true) {
+                        // ignore: use_build_context_synchronously
+                        await Provider.of<EventProvider>(context, listen: false)
+                            .getMyEvents();
                         showDialog(
                           // ignore: use_build_context_synchronously
                           context: context,
@@ -301,6 +304,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             _isUploading = false;
                           });
                           if (result == true) {
+                            // ignore: use_build_context_synchronously
+                            await Provider.of<EventProvider>(context,
+                                    listen: false)
+                                .getMyEvents();
                             showDialog(
                               // ignore: use_build_context_synchronously
                               context: context,

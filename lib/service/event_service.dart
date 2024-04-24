@@ -87,9 +87,11 @@ class EventService {
       var response = await ApiHelper().get('/auth/user/my-event');
       if (response.statusCode == HttpStatus.ok) {
         var jsonList = json.decode(response.body) as List;
-        return jsonList
+        var res = jsonList
             .map<EventModel>((e) => EventModel.fromListsJson(e))
             .toList();
+        res.sort((a, b) => a.timeOfEvent.compareTo(b.timeOfEvent));
+        return res;
       } else {
         ErrorHelper.showError(
             message:
