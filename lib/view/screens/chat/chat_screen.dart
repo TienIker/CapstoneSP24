@@ -1,24 +1,22 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:multi_dropdown/multiselect_dropdown.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
 
 import 'package:sharing_cafe/helper/datetime_helper.dart';
 import 'package:sharing_cafe/helper/error_helper.dart';
-import 'package:sharing_cafe/helper/key_value_pair.dart';
 import 'package:sharing_cafe/model/chat_message_model.dart';
-import 'package:sharing_cafe/model/recommend_cafe.dart';
 import 'package:sharing_cafe/provider/chat_provider.dart';
 import 'package:sharing_cafe/service/chat_service.dart';
 import 'package:sharing_cafe/view/components/date_time_picker.dart';
 import 'package:sharing_cafe/view/components/form_field.dart';
-import 'package:sharing_cafe/view/components/select_form.dart';
 
 class ChatScreen extends StatefulWidget {
   static String routeName = "/chat";
   const ChatScreen({super.key});
-
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
@@ -53,7 +51,17 @@ class _ChatScreenState extends State<ChatScreen> {
 
   DateTime? _selectedDateTime;
   final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final SuggestionsController _suggestionsController = SuggestionsController();
   String? _location;
+  List<String> popularKeyword = [
+    "Highlands Coffee",
+    "Trung Nguyên Legend Café",
+    "The Coffee House",
+    "Phúc Long coffee & tea",
+    "Cộng Cà Phê",
+    "Milano Coffee"
+  ];
 
   void _handleDateTimeChange(DateTime? dateTime) {
     if (dateTime == null) return;
@@ -91,112 +99,148 @@ class _ChatScreenState extends State<ChatScreen> {
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
+                  isScrollControlled: true,
+                  useSafeArea: true,
                   builder: (context) {
                     return Container(
                       padding: const EdgeInsets.all(16),
-                      height: 600,
+                      height: 1200,
                       width: double.infinity,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.alarm),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                "Thêm lịch hẹn",
-                                style: headingStyle,
-                              ),
-                            ],
-                          ),
-                          const Text(
-                            "Đặt lịch hẹn với người này?",
-                            style: TextStyle(
-                              fontSize: 16,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.alarm),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Text(
+                                  "Thêm lịch hẹn",
+                                  style: headingStyle,
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(
-                            height: 32,
-                          ),
-                          KFormField(
-                            hintText: "Tiêu đề",
-                            controller: _titleController,
-                            onChanged: (p0) {
-                              setState(() {
-                                _titleController.text = p0;
-                              });
-                            },
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          DateTimePicker(
-                            onDateTimeChanged: _handleDateTimeChange,
-                            label: "Thêm ngày",
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          FutureBuilder(
-                            future: Provider.of<ChatProvider>(context,
-                                    listen: false)
-                                .getRecommendCafe(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const Row(
-                                  children: [
-                                    CircularProgressIndicator.adaptive(),
-                                    SizedBox(
-                                      width: 8,
-                                    ),
-                                    Text("Đang lấy địa điểm gợi ý...")
-                                  ],
-                                );
-                              }
-                              if (snapshot.hasError) {
-                                return const Text("Error");
-                              }
-                              var locations =
-                                  snapshot.data as List<RecommendCafeModel>;
-                              return KSelectForm(
-                                hintText: "Địa điểm",
-                                onChanged: (p0) {
-                                  if (p0 != null) {
+                            const Text(
+                              "Đặt lịch hẹn với người này?",
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 32,
+                            ),
+                            KFormField(
+                              hintText: "Tiêu đề",
+                              controller: _titleController,
+                              onChanged: (p0) {
+                                setState(() {
+                                  _titleController.text = p0;
+                                });
+                              },
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            DateTimePicker(
+                              onDateTimeChanged: _handleDateTimeChange,
+                              label: "Thêm ngày",
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Text("Địa điểm gợi ý",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            MultiSelectDropDown(
+                              selectedOptionTextColor: kPrimaryColor,
+                              hint: 'Chọn địa điểm gợi ý',
+                              borderColor: Colors.transparent,
+                              onOptionSelected: (options) async {
+                                String selectedValue = options.isNotEmpty
+                                    ? options.first.label.toString()
+                                    : popularKeyword.first;
+                                Provider.of<ChatProvider>(context,
+                                        listen: false)
+                                    .setSelectedKeyword(selectedValue);
+                              },
+                              onOptionRemoved: (index, option) {
+                                Provider.of<ChatProvider>(context,
+                                        listen: false)
+                                    .setSelectedKeyword(popularKeyword.first);
+                                setState(() {
+                                  _locationController.text =
+                                      popularKeyword.first;
+                                });
+                              },
+                              options: popularKeyword.map((e) {
+                                return ValueItem(label: e, value: e);
+                              }).toList(),
+                              selectionType: SelectionType.single,
+                              chipConfig: const ChipConfig(
+                                  wrapType: WrapType.scroll,
+                                  backgroundColor: kPrimaryColor),
+                              // dropdownHeight: 400,
+                              optionTextStyle: const TextStyle(fontSize: 16),
+                              selectedOptionIcon:
+                                  const Icon(Icons.check_circle),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Consumer<ChatProvider>(
+                                builder: (context, value, child) {
+                              return TypeAheadField(
+                                  controller: _locationController,
+                                  suggestionsCallback: (pattern) async {
+                                    var text = pattern.isNotEmpty
+                                        ? pattern
+                                        : value.selectedKeyword;
+                                    return await value.getRecommendCafe(text);
+                                  },
+                                  suggestionsController: _suggestionsController,
+                                  itemBuilder: (context, suggestion) {
+                                    return ListTile(
+                                      title: Text(suggestion),
+                                    );
+                                  },
+                                  onSelected: (suggestion) {
                                     setState(() {
-                                      _location = p0.value;
+                                      _location = suggestion;
                                     });
-                                  }
-                                },
-                                options: locations
-                                    .map((e) => KeyValuePair(
-                                        e.description, e.description))
-                                    .toList(),
-                              );
-                            },
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
                                   },
-                                  child: const Text("Hủy")),
-                              TextButton(
-                                  onPressed: () {
-                                    _createAppointment();
-                                  },
-                                  child: const Text("Đặt lịch")),
-                            ],
-                          ),
-                        ],
+                                  builder: (context, controller, focusNode) {
+                                    return TextField(
+                                      controller: controller,
+                                      focusNode: focusNode,
+                                      autofocus: true,
+                                    );
+                                  });
+                            }),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("Hủy")),
+                                TextButton(
+                                    onPressed: () {
+                                      _createAppointment();
+                                    },
+                                    child: const Text("Đặt lịch")),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },

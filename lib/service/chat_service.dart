@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:sharing_cafe/helper/api_helper.dart';
 import 'package:sharing_cafe/model/chat_message_model.dart';
 import 'package:sharing_cafe/model/recommend_cafe.dart';
@@ -27,9 +26,9 @@ class ChatService {
   }
 
   Future<List<RecommendCafeModel>> getRecommendCafe(
-      String userId, String currentUserId) async {
+      String userId, String currentUserId, String selectedKeyword) async {
     var endpoint =
-        "/location/getRecommendCafe?userIdA=$userId&userIdB=$currentUserId";
+        "/location/getRecommendCafe?userIdA=$userId&userIdB=$currentUserId&keyword=$selectedKeyword";
     return ApiHelper().get(endpoint).then((response) {
       if (response.statusCode == HttpStatus.ok) {
         var jsonList = json.decode(response.body);
