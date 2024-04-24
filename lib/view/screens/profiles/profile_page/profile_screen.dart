@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
+import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 import 'package:sharing_cafe/provider/account_provider.dart';
 import 'package:sharing_cafe/provider/user_profile_provider.dart';
+import 'package:sharing_cafe/view/screens/appointment/appointment_history.dart';
 import 'package:sharing_cafe/view/screens/auth/complete_profile/complete_profile_screen.dart';
 import 'package:sharing_cafe/view/screens/auth/complete_profile/select_interest_screen.dart';
 import 'package:sharing_cafe/view/screens/auth/login/login_screen.dart';
@@ -155,6 +157,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onPress: () {
                             Navigator.pushNamed(
                                 context, CompleteProfileScreen.routeName);
+                          }),
+                      ProfileMenu(
+                          title: "Lịch sử cuộc hẹn",
+                          icon: LineAwesomeIcons.history,
+                          onPress: () async {
+                            var loggedUserId =
+                                await SharedPrefHelper.getUserId();
+                            Navigator.pushNamed(
+                                context, AppointmentHistoryScreen.routeName,
+                                arguments: loggedUserId);
                           }),
                       const Divider(color: Colors.grey),
                       // ProfileMenu(

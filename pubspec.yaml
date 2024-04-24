@@ -32,6 +32,7 @@ dependencies:
   get: ^4.6.6
   lottie: ^3.1.0
   flutter_typeahead: ^5.2.0
+  flutter_rating_bar: ^4.0.1
 
 dev_dependencies:
   flutter_test:

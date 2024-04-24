@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:multi_dropdown/multiselect_dropdown.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/enums.dart';
@@ -20,19 +21,26 @@ class _SwipeScreenState extends State<SwipeScreen> {
   bool _isLoading = false;
   bool _showIcon = false;
   bool _isLikeIcon = true;
+  List<ValueItem> selectedFilterByAge = [];
+  List<ValueItem> selectedFilterByGender = [];
   @override
   void initState() {
+    getProfiles();
+    super.initState();
+  }
+
+  void getProfiles({String? filterByAge, String? filterByGender}) {
     setState(() {
       _isLoading = true;
     });
     Provider.of<MatchProvider>(context, listen: false)
-        .initListProfiles()
+        .initListProfiles(
+            filterByAge: filterByAge, filterByGender: filterByGender)
         .then((_) {
       setState(() {
         _isLoading = false;
       });
     });
-    super.initState();
   }
 
   showIcon({isLike = true}) async {
@@ -49,7 +57,6 @@ class _SwipeScreenState extends State<SwipeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    GlobalKey filterButtonKey = GlobalKey();
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -68,41 +75,86 @@ class _SwipeScreenState extends State<SwipeScreen> {
         actions: [
           //filter
           IconButton(
-            icon: const Icon(Icons.filter_alt_outlined),
-            key: filterButtonKey,
-            onPressed: () {
-              // Get the RenderBox object
-              final RenderBox renderBox = filterButtonKey.currentContext
-                  ?.findRenderObject() as RenderBox;
-              final Offset offset = renderBox.localToGlobal(Offset.zero);
-
-              // Calculate the position for the menu
-              final RelativeRect position = RelativeRect.fromLTRB(
-                  offset.dx, // This is the left position.
-                  offset.dy, // This is the top position.
-                  30, // This is the right position (not used here).
-                  0 // This is the bottom position (not used here).
-                  );
-              showMenu(
-                context: context,
-                position: position,
-                items: [
-                  PopupMenuItem(
-                    value: "age",
-                    onTap: () {},
-                    child: const Text("Theo tuổi"),
-                  ),
-                  PopupMenuItem(
-                    value: "distance",
-                    onTap: () {},
-                    child: const Text(
-                      "Theo khoảng cách",
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
+              icon: const Icon(Icons.filter_alt_outlined),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text(
+                          "Bộ lọc",
+                          style: heading2Style,
+                        ),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            MultiSelectDropDown(
+                              selectedOptionTextColor: kPrimaryColor,
+                              hint: 'Chọn độ tuổi',
+                              onOptionSelected: (options) async {
+                                setState(() {
+                                  selectedFilterByAge = options;
+                                });
+                              },
+                              options: filterAgeRange.map((age) {
+                                return ValueItem(label: age, value: age);
+                              }).toList(),
+                              selectedOptions: selectedFilterByAge,
+                              selectionType: SelectionType.single,
+                              chipConfig: const ChipConfig(
+                                  wrapType: WrapType.scroll,
+                                  backgroundColor: kPrimaryColor),
+                              optionTextStyle: const TextStyle(fontSize: 16),
+                              selectedOptionIcon:
+                                  const Icon(Icons.check_circle),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            MultiSelectDropDown(
+                              selectedOptionTextColor: kPrimaryColor,
+                              hint: 'Chọn giới tính',
+                              onOptionSelected: (options) async {
+                                setState(() {
+                                  selectedFilterByGender = options;
+                                });
+                              },
+                              options: ['Nam', 'Nữ'].map((gender) {
+                                return ValueItem(label: gender, value: gender);
+                              }).toList(),
+                              selectedOptions: selectedFilterByGender,
+                              selectionType: SelectionType.single,
+                              chipConfig: const ChipConfig(
+                                  wrapType: WrapType.scroll,
+                                  backgroundColor: kPrimaryColor),
+                              optionTextStyle: const TextStyle(fontSize: 16),
+                              selectedOptionIcon:
+                                  const Icon(Icons.check_circle),
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                var filterByAge = selectedFilterByAge.isNotEmpty
+                                    ? selectedFilterByAge.first.value
+                                    : null;
+                                var filterByGender =
+                                    selectedFilterByGender.isNotEmpty
+                                        ? selectedFilterByGender.first.value
+                                        : null;
+                                getProfiles(
+                                    filterByAge: filterByAge,
+                                    filterByGender: filterByGender);
+                                Navigator.pop(context);
+                              },
+                              child: const Text("Áp dụng"),
+                            )
+                          ],
+                        ),
+                      );
+                    });
+              }),
           IconButton(
             icon: const Icon(Icons.pending_actions),
             onPressed: () {
@@ -709,8 +761,18 @@ class _SwipeScreenState extends State<SwipeScreen> {
                                   heroTag: "dislike",
                                   onPressed: () async {
                                     await showIcon(isLike: false);
-                                    await value
-                                        .likeOrUnlike(MatchStatus.dislike);
+                                    var filterByAge =
+                                        selectedFilterByAge.isNotEmpty
+                                            ? selectedFilterByAge.first.value
+                                            : null;
+                                    var filterByGender =
+                                        selectedFilterByGender.isNotEmpty
+                                            ? selectedFilterByGender.first.value
+                                            : null;
+                                    await value.likeOrUnlike(
+                                        MatchStatus.dislike,
+                                        filterByAge: filterByAge,
+                                        filterByGender: filterByGender);
                                   },
                                   backgroundColor: Colors.white,
                                   child: const Icon(Icons.close,
@@ -720,12 +782,24 @@ class _SwipeScreenState extends State<SwipeScreen> {
                                   heroTag: "like",
                                   onPressed: () async {
                                     await showIcon(isLike: true);
-                                    await value
-                                        .likeOrUnlike(MatchStatus.pending);
+                                    var filterByAge =
+                                        selectedFilterByAge.isNotEmpty
+                                            ? selectedFilterByAge.first.value
+                                            : null;
+                                    var filterByGender =
+                                        selectedFilterByGender.isNotEmpty
+                                            ? selectedFilterByGender.first.value
+                                            : null;
+                                    await value.likeOrUnlike(
+                                        MatchStatus.pending,
+                                        filterByAge: filterByAge,
+                                        filterByGender: filterByGender);
                                   },
                                   backgroundColor: Colors.white,
-                                  child: const Icon(Icons.favorite,
-                                      color: Colors.green),
+                                  child: Image.asset(
+                                    'assets/images/cafe.png',
+                                    height: 20,
+                                  ),
                                 ),
                               ],
                             ),

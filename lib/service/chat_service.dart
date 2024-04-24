@@ -79,4 +79,34 @@ class ChatService {
       }
     });
   }
+
+  // get schedulte history
+  Future<List<ScheduleModel>> getScheduleHistory() {
+    var endpoint = "/auth/schedule/get-history";
+    return ApiHelper().get(endpoint).then((response) {
+      if (response.statusCode == HttpStatus.ok) {
+        var jsonList = json.decode(response.body) as List;
+        return jsonList
+            .map<ScheduleModel>((e) => ScheduleModel.fromJson(e))
+            .toList();
+      } else {
+        return [];
+      }
+    });
+  }
+
+  Future<bool> sendFeedback(String scheduleId, String content, int rating) {
+    var endpoint = "/auth/schedule/rating";
+    var body = {
+      "schedule_id": scheduleId,
+      "content": content,
+      "rating": rating.toString(),
+    };
+    return ApiHelper().post(endpoint, body).then((response) {
+      if (response.statusCode != HttpStatus.ok) {
+        throw Exception("Failed to send feedback: ${response.statusCode}");
+      }
+      return true;
+    });
+  }
 }

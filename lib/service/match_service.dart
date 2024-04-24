@@ -9,9 +9,16 @@ import 'package:sharing_cafe/model/profile_info_model.dart';
 import 'package:sharing_cafe/model/profile_model.dart';
 
 class MatchService {
-  Future<List<ProfileModel>> getListProfiles(int limit, int offset) async {
+  Future<List<ProfileModel>> getListProfiles(int limit, int offset,
+      String? filterByAge, String? filterByGender) async {
     try {
       var endpoint = "/auth/matches-interest?limit=$limit&offset=$offset";
+      if (filterByAge != null) {
+        endpoint += "&filterByAge=$filterByAge";
+      }
+      if (filterByGender != null) {
+        endpoint += "&filterByGender=$filterByGender";
+      }
       var response = await ApiHelper().get(endpoint);
       if (response.statusCode == HttpStatus.ok) {
         var result = json.decode(response.body);

@@ -55,3 +55,22 @@ OutlineInputBorder outlineInputBorder() {
     borderSide: const BorderSide(color: kTextColor),
   );
 }
+
+const ageRange = [
+  '16 - 20',
+  '21 - 25',
+  '26 - 30',
+  '31 - 35',
+  '36 - 40',
+  '41 - 50',
+  'Không đề cập'
+];
+
+const filterAgeRange = [
+  '16 - 20',
+  '21 - 25',
+  '26 - 30',
+  '31 - 35',
+  '36 - 40',
+  '41 - 50'
+];

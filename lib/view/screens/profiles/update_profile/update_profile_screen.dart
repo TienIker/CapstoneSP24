@@ -352,15 +352,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                     focusedBorder: InputBorder.none,
                                     hintText: 'Chọn độ tuổi',
                                   ),
-                                  items: [
-                                    '16 - 20',
-                                    '21 - 25',
-                                    '26 - 30',
-                                    '31 - 35',
-                                    '36 - 40',
-                                    '41 - 50',
-                                    'Không đề cập'
-                                  ].map((String value) {
+                                  items: ageRange.map((String value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Text(value),

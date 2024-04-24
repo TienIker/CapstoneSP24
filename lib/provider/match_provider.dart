@@ -1,5 +1,4 @@
 // ignore_for_file: avoid_print
-
 import 'package:flutter/material.dart';
 import 'package:sharing_cafe/enums.dart';
 import 'package:sharing_cafe/helper/error_helper.dart';
@@ -13,24 +12,26 @@ class MatchProvider extends ChangeNotifier {
   ProfileInfoModel? _info;
   final int _limit = 5;
   final int _offset = 0;
-
   List<ProfileModel> get profiles => _profiles;
   ProfileModel? get currentProfile => _currentProfile;
   ProfileInfoModel? get info => _info;
 
-  Future initListProfiles() async {
-    _profiles = await MatchService().getListProfiles(_limit, _offset);
+  Future initListProfiles({String? filterByAge, String? filterByGender}) async {
+    _profiles = await MatchService()
+        .getListProfiles(_limit, _offset, filterByAge, filterByGender);
     _currentProfile = _profiles.firstOrNull;
     notifyListeners();
   }
 
-  Future likeOrUnlike(MatchStatus status) async {
+  Future likeOrUnlike(MatchStatus status,
+      {String? filterByAge, String? filterByGender}) async {
     try {
       var userId = _currentProfile!.userId;
       var result = await MatchService().updateMatchStatus(userId, status);
       if (result == true) {
         var selectedIndex = _profiles.indexWhere((e) => e.userId == userId);
-        _getNextProfileThenAddDistinct();
+        _getNextProfileThenAddDistinct(
+            filterByAge: filterByAge, filterByGender: filterByGender);
         _replaceProfile(selectedIndex);
         _currentProfile = _profiles.first;
         print("Current: ${_currentProfile!.name}");
@@ -67,8 +68,10 @@ class MatchProvider extends ChangeNotifier {
     _profiles.removeAt(index);
   }
 
-  _getNextProfileThenAddDistinct() async {
-    var nextProfiles = await MatchService().getListProfiles(_limit, _offset);
+  _getNextProfileThenAddDistinct(
+      {String? filterByAge, String? filterByGender}) async {
+    var nextProfiles = await MatchService()
+        .getListProfiles(_limit, _offset, filterByAge, filterByGender);
     _addDistinct(nextProfiles);
   }
 
@@ -76,11 +79,9 @@ class MatchProvider extends ChangeNotifier {
     Map<String, ProfileModel> profilesMap = {
       for (var profile in _profiles) profile.userId: profile
     };
-
     for (var profile in nextProfiles) {
       profilesMap.putIfAbsent(profile.userId, () => profile);
     }
-
     _profiles = profilesMap.values.toList();
   }
   // End private methods
