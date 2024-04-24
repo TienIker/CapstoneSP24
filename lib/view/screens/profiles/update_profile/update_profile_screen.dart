@@ -23,7 +23,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final TextEditingController _userNameController = TextEditingController();
   String? _age;
   final TextEditingController _storyController = TextEditingController();
-  String? _address;
   String? _gender;
   final TextEditingController _purposeController = TextEditingController();
   final TextEditingController _favoriteLocationController =
@@ -86,7 +85,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
           _imageUrl = value.profileAvatar;
           _age = value.age;
           _storyController.text = value.story!;
-          _address = value.address;
           _gender = value.gender;
           if (value.purpose != null) {
             _purposeController.text = value.purpose!;
@@ -195,6 +193,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       setState(() {
                         _isUploading = true;
                       });
+                      String? address;
+                      if (_addressDistrict != null &&
+                          _addressProvince != null) {
+                        address =
+                            "${_addressDistrict!.fullName}, ${_addressProvince!.province}";
+                      }
+
                       var result = await Provider.of<UserProfileProvider>(
                               context,
                               listen: false)
@@ -203,7 +208,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         userName: _userNameController.text,
                         age: _age,
                         story: _storyController.text,
-                        address: _address,
+                        address: address,
                         gender: _gender,
                         purpose: _purposeController.text,
                         favoriteLocation: _favoriteLocationController.text,
