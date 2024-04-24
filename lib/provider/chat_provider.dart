@@ -1,5 +1,8 @@
 // ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/helper/error_helper.dart';
 import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 import 'package:sharing_cafe/model/chat_message_model.dart';
@@ -12,10 +15,12 @@ class ChatProvider extends ChangeNotifier {
   final Map<String, List<ChatMessageModel>> _mapUserMessages = {};
   late io.Socket socket;
   late String _userId;
-  String _selectedKeyword = "Highland";
+  Widget _locationAutocompleteField = Container();
+  final TextEditingController _locationController = TextEditingController();
 
   String get userId => _userId;
-  String get selectedKeyword => _selectedKeyword;
+  Widget get locationAutocompleteField => _locationAutocompleteField;
+  TextEditingController get locationController => _locationController;
 
   void connectAndListen() {
     socket = io.io(ApiHelper().socketBaseUrl, <String, dynamic>{
@@ -159,6 +164,9 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Future<List<String>> getRecommendCafe(String selectedKeyword) async {
+    if (selectedKeyword.isEmpty) {
+      selectedKeyword = "Highland Coffee";
+    }
     var currentUserId = await SharedPrefHelper.getUserId();
     var recommendCafe = await ChatService()
         .getRecommendCafe(_userId, currentUserId, selectedKeyword);
@@ -184,7 +192,60 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void setSelectedKeyword(String keyword) {
-    _selectedKeyword = keyword;
+    _locationController.text = keyword;
+    var focusNode = FocusNode();
+    getLocationAutocomplteteField(_locationController, focusNode, callback);
     notifyListeners();
+    focusNode.requestFocus();
+  }
+
+  callback(String suggestion) {
+    var focusNode = FocusNode();
+    _locationController.text = suggestion;
+    getLocationAutocomplteteField(_locationController, focusNode, callback);
+    notifyListeners();
+    focusNode.requestFocus();
+  }
+
+  Future<Widget> getLocationAutocomplteteField(
+      TextEditingController locationController,
+      FocusNode focusNode,
+      Function(String) callback) async {
+    _locationAutocompleteField = TypeAheadField(
+        controller: locationController,
+        suggestionsCallback: (pattern) async {
+          print(pattern);
+          var text = pattern.isNotEmpty ? pattern : locationController.text;
+          return await getRecommendCafe(text);
+        },
+        itemBuilder: (context, suggestion) {
+          return ListTile(
+            title: Text(suggestion),
+          );
+        },
+        focusNode: focusNode,
+        onSelected: (suggestion) {
+          callback(suggestion);
+        },
+        builder: (context, controller, focusNode) {
+          return Container(
+            decoration: BoxDecoration(
+              color: kFormFieldColor,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: TextField(
+              controller: controller,
+              focusNode: focusNode,
+              decoration: const InputDecoration(
+                  hintText: "Nhập địa điểm",
+                  contentPadding: EdgeInsets.all(16),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none),
+            ),
+          );
+        });
+    notifyListeners();
+    return _locationAutocompleteField;
   }
 }

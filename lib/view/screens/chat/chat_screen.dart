@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:multi_dropdown/multiselect_dropdown.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
@@ -17,6 +16,7 @@ import 'package:sharing_cafe/view/components/form_field.dart';
 class ChatScreen extends StatefulWidget {
   static String routeName = "/chat";
   const ChatScreen({super.key});
+
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
@@ -51,8 +51,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   DateTime? _selectedDateTime;
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
-  final SuggestionsController _suggestionsController = SuggestionsController();
   String? _location;
   List<String> popularKeyword = [
     "Highlands Coffee",
@@ -71,6 +69,9 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _createAppointment() {
+    _location = Provider.of<ChatProvider>(context, listen: false)
+        .locationController
+        .text;
     if (_selectedDateTime != null &&
         _titleController.text.isNotEmpty &&
         _location != null) {
@@ -163,7 +164,8 @@ class _ChatScreenState extends State<ChatScreen> {
                               onOptionSelected: (options) async {
                                 String selectedValue = options.isNotEmpty
                                     ? options.first.label.toString()
-                                    : popularKeyword.first;
+                                    : "";
+
                                 Provider.of<ChatProvider>(context,
                                         listen: false)
                                     .setSelectedKeyword(selectedValue);
@@ -171,11 +173,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               onOptionRemoved: (index, option) {
                                 Provider.of<ChatProvider>(context,
                                         listen: false)
-                                    .setSelectedKeyword(popularKeyword.first);
-                                setState(() {
-                                  _locationController.text =
-                                      popularKeyword.first;
-                                });
+                                    .setSelectedKeyword("");
                               },
                               options: popularKeyword.map((e) {
                                 return ValueItem(label: e, value: e);
@@ -193,34 +191,10 @@ class _ChatScreenState extends State<ChatScreen> {
                               height: 10,
                             ),
                             Consumer<ChatProvider>(
-                                builder: (context, value, child) {
-                              return TypeAheadField(
-                                  controller: _locationController,
-                                  suggestionsCallback: (pattern) async {
-                                    var text = pattern.isNotEmpty
-                                        ? pattern
-                                        : value.selectedKeyword;
-                                    return await value.getRecommendCafe(text);
-                                  },
-                                  suggestionsController: _suggestionsController,
-                                  itemBuilder: (context, suggestion) {
-                                    return ListTile(
-                                      title: Text(suggestion),
-                                    );
-                                  },
-                                  onSelected: (suggestion) {
-                                    setState(() {
-                                      _location = suggestion;
-                                    });
-                                  },
-                                  builder: (context, controller, focusNode) {
-                                    return TextField(
-                                      controller: controller,
-                                      focusNode: focusNode,
-                                      autofocus: true,
-                                    );
-                                  });
-                            }),
+                              builder: (context, value, child) {
+                                return value.locationAutocompleteField;
+                              },
+                            ),
                             const SizedBox(
                               height: 16,
                             ),
@@ -286,7 +260,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               message.appointment!.isApproved != false;
                           var appointmentComponent = <Widget>[
                             Container(
-                              height: 270,
+                              height: 300,
                               padding: const EdgeInsets.all(16),
                               width: MediaQuery.of(context).size.width * 0.8,
                               decoration: BoxDecoration(
@@ -310,6 +284,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(
                                     height: 8,
@@ -327,7 +303,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     style: const TextStyle(
                                       fontSize: 14,
                                     ),
-                                    maxLines: 2,
+                                    maxLines: 3,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(
