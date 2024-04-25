@@ -1,10 +1,9 @@
 // ignore_for_file: avoid_print
 
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:sharing_cafe/constants.dart';
+import 'package:sharing_cafe/helper/common_helper.dart';
 import 'package:sharing_cafe/helper/error_helper.dart';
 import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 import 'package:sharing_cafe/model/chat_message_model.dart';
@@ -40,10 +39,7 @@ class ChatProvider extends ChangeNotifier {
             message: "Lỗi 500: Không kết nối được với socket");
         return;
       }
-      //check data is json or not
-      try {
-        json.decode(data);
-      } catch (e) {
+      if (!CommonHelper.isJsonCompatible(data)) {
         ErrorHelper.showError(message: data);
         return;
       }
