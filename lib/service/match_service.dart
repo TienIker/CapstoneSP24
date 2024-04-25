@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:sharing_cafe/enums.dart';
 import 'package:sharing_cafe/helper/api_helper.dart';
 import 'package:sharing_cafe/helper/error_helper.dart';
@@ -55,9 +56,7 @@ class MatchService {
     if (response.statusCode == HttpStatus.ok) {
       var result = json.decode(response.body);
       var jsonList = result as List;
-      var userId = await SharedPrefHelper.getUserId();
       return jsonList
-          .where((element) => element["user_id_liked"] == userId)
           .map<MatchedModel>((e) => MatchedModel.fromJson(e))
           .toList();
     }

@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:sharing_cafe/constants.dart';
@@ -36,6 +38,13 @@ class ChatProvider extends ChangeNotifier {
       if (data == null) {
         ErrorHelper.showError(
             message: "Lỗi 500: Không kết nối được với socket");
+        return;
+      }
+      //check data is json or not
+      try {
+        json.decode(data);
+      } catch (e) {
+        ErrorHelper.showError(message: data);
         return;
       }
       var message = ChatMessageModel.fromJson(data);

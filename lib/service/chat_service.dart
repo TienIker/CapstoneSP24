@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:sharing_cafe/helper/api_helper.dart';
 import 'package:sharing_cafe/model/chat_message_model.dart';
 import 'package:sharing_cafe/model/recommend_cafe.dart';
@@ -86,9 +87,11 @@ class ChatService {
     return ApiHelper().get(endpoint).then((response) {
       if (response.statusCode == HttpStatus.ok) {
         var jsonList = json.decode(response.body) as List;
-        return jsonList
+        var res = jsonList
             .map<ScheduleModel>((e) => ScheduleModel.fromJson(e))
             .toList();
+        res.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        return res;
       } else {
         return [];
       }
