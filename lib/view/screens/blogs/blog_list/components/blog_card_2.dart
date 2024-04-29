@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sharing_cafe/constants.dart';
+import 'package:sharing_cafe/view/components/custom_network_image.dart';
 
 class BlogCard2 extends StatelessWidget {
   final String imageUrl;
@@ -36,8 +37,8 @@ class BlogCard2 extends StatelessWidget {
               children: <Widget>[
                 ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                  child: Image.network(
-                    imageUrl,
+                  child: CustomNetworkImage(
+                    url: imageUrl,
                     height: 150.0,
                     fit: BoxFit.cover,
                   ),
@@ -61,8 +62,8 @@ class BlogCard2 extends StatelessWidget {
                           ClipRRect(
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(8.0)),
-                            child: Image.network(
-                              avtUrl,
+                            child: CustomNetworkImage(
+                              url: avtUrl,
                               height: 15.0,
                               width: 15.0,
                               fit: BoxFit.cover,

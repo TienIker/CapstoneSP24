@@ -9,6 +9,7 @@ import 'package:sharing_cafe/model/province_model.dart';
 import 'package:sharing_cafe/provider/user_profile_provider.dart';
 import 'package:sharing_cafe/service/image_service.dart';
 import 'package:sharing_cafe/service/location_service.dart';
+import 'package:sharing_cafe/view/components/custom_network_image.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   static String routeName = "/update_profile";
@@ -294,31 +295,31 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                     height: 120,
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(100),
-                                      child:
-                                          userProfile.profileAvatar.isNotEmpty
-                                              ? Image.network(
-                                                  userProfile.profileAvatar,
-                                                  fit: BoxFit.cover)
-                                              : Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.image,
-                                                      color: Colors.grey[600],
-                                                      size: 48,
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 16,
-                                                    ),
-                                                    Text(
-                                                      "Thêm ảnh",
-                                                      style: TextStyle(
-                                                        color: Colors.grey[600],
-                                                      ),
-                                                    )
-                                                  ],
+                                      child: userProfile
+                                              .profileAvatar.isNotEmpty
+                                          ? CustomNetworkImage(
+                                              url: userProfile.profileAvatar,
+                                              fit: BoxFit.cover)
+                                          : Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.image,
+                                                  color: Colors.grey[600],
+                                                  size: 48,
                                                 ),
+                                                const SizedBox(
+                                                  height: 16,
+                                                ),
+                                                Text(
+                                                  "Thêm ảnh",
+                                                  style: TextStyle(
+                                                    color: Colors.grey[600],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
                                     )),
                               ],
                             ),

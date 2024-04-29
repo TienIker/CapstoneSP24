@@ -6,6 +6,7 @@ import 'package:sharing_cafe/helper/error_helper.dart';
 import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 import 'package:sharing_cafe/provider/event_provider.dart';
 import 'package:sharing_cafe/service/event_service.dart';
+import 'package:sharing_cafe/view/components/custom_network_image.dart';
 import 'package:sharing_cafe/view/components/form_field.dart';
 
 class EventDetailScreen extends StatefulWidget {
@@ -66,8 +67,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         borderRadius: const BorderRadius.only(
                             bottomLeft: Radius.circular(8),
                             bottomRight: Radius.circular(8)),
-                        child: Image.network(
-                          eventDetails.backgroundImage,
+                        child: CustomNetworkImage(
+                          url: eventDetails.backgroundImage,
                           fit: BoxFit.cover,
                         ),
                       ),

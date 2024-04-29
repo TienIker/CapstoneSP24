@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sharing_cafe/constants.dart';
+import 'package:sharing_cafe/view/components/custom_network_image.dart';
 
 class EventCard extends StatelessWidget {
   final String imageUrl;
@@ -35,8 +36,8 @@ class EventCard extends StatelessWidget {
             children: <Widget>[
               ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                child: Image.network(
-                  imageUrl,
+                child: CustomNetworkImage(
+                  url: imageUrl,
                   height: 150.0,
                   fit: BoxFit.cover,
                 ),

@@ -11,6 +11,7 @@ import 'package:sharing_cafe/view/screens/blogs/blog_detail/blog_detail_screen.d
 import 'package:sharing_cafe/view/screens/blogs/blog_list/components/blog_card_2.dart';
 import 'package:sharing_cafe/view/screens/blogs/blog_list/components/blog_card_3.dart';
 import 'package:sharing_cafe/view/screens/blogs/create_blog/create_blog_screen.dart';
+import 'package:sharing_cafe/view/screens/blogs/my_blogs/my_blog_screen.dart';
 import 'package:sharing_cafe/view/screens/events/search/search_screen.dart';
 
 import 'components/blog_card.dart';
@@ -75,6 +76,15 @@ class _BlogListScreenState extends State<BlogListScreen> {
             ),
             onPressed: () {
               Navigator.pushNamed(context, CreateBlogScreen.routeName);
+            },
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.calendar_month_outlined,
+              size: 24,
+            ),
+            onPressed: () {
+              Navigator.pushNamed(context, MyBlogScreen.routeName);
             },
           ),
           IconButton(

@@ -28,6 +28,24 @@ class BlogService {
     return [];
   }
 
+  // get my blog
+  Future<List<BlogModel>> getMyBlogs() async {
+    try {
+      var response = await ApiHelper().get('/auth/user/my-blog');
+      if (response.statusCode == HttpStatus.ok) {
+        var jsonList = json.decode(response.body) as List;
+        return jsonList.map<BlogModel>((e) => BlogModel.fromJson(e)).toList();
+      } else {
+        ErrorHelper.showError(
+            message:
+                "Lỗi ${response.statusCode}: Không thể lấy danh sách blog của bạn");
+      }
+    } on Exception catch (_, e) {
+      print(e);
+    }
+    return [];
+  }
+
   Future<BlogModel?> getBlogDetails(String blogId) async {
     try {
       var userId = await SharedPrefHelper.getUserId();
@@ -107,7 +125,7 @@ class BlogService {
     var data = {
       "user_id": userId,
       "interest_id": interestId,
-      "content": content,
+      "content": content.toString(),
       "title": title,
       "image": image,
       "likes_count": likesCount,

@@ -7,6 +7,7 @@ import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 import 'package:sharing_cafe/provider/account_provider.dart';
 import 'package:sharing_cafe/provider/user_profile_provider.dart';
+import 'package:sharing_cafe/view/components/custom_network_image.dart';
 import 'package:sharing_cafe/view/screens/appointment/appointment_history.dart';
 import 'package:sharing_cafe/view/screens/auth/complete_profile/complete_profile_screen.dart';
 import 'package:sharing_cafe/view/screens/auth/complete_profile/select_interest_screen.dart';
@@ -76,7 +77,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 120,
                           child: ClipRRect(
                               borderRadius: BorderRadius.circular(100),
-                              child: Image.network(userProfile.profileAvatar,
+                              child: CustomNetworkImage(
+                                  url: userProfile.profileAvatar,
                                   fit: BoxFit.cover))),
                       const SizedBox(height: 10),
                       Text(

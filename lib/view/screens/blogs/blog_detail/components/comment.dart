@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:sharing_cafe/view/components/custom_network_image.dart';
 
 class Comment extends StatefulWidget {
   final String avtUrl;
@@ -40,8 +41,8 @@ class _CommentState extends State<Comment> {
           contentPadding: EdgeInsets.zero,
           leading: ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(100.0)),
-            child: Image.network(
-              widget.avtUrl,
+            child: CustomNetworkImage(
+              url: widget.avtUrl,
               height: 32,
               width: 32,
               fit: BoxFit.cover,

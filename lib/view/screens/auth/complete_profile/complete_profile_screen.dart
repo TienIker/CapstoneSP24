@@ -11,6 +11,7 @@ import 'package:sharing_cafe/model/province_model.dart';
 import 'package:sharing_cafe/provider/account_provider.dart';
 import 'package:sharing_cafe/service/image_service.dart';
 import 'package:sharing_cafe/service/location_service.dart';
+import 'package:sharing_cafe/view/components/custom_network_image.dart';
 import 'package:sharing_cafe/view/screens/auth/complete_profile/select_interest_screen.dart';
 
 import '../../../../constants.dart';
@@ -125,7 +126,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(100),
                               child: _imageUrl != null && _imageUrl!.isNotEmpty
-                                  ? Image.network(_imageUrl!, fit: BoxFit.cover)
+                                  ? CustomNetworkImage(
+                                      url: _imageUrl!, fit: BoxFit.cover)
                                   : Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,

@@ -7,6 +7,7 @@ import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 import 'package:sharing_cafe/model/comment_model.dart';
 import 'package:sharing_cafe/provider/blog_provider.dart';
 import 'package:sharing_cafe/service/blog_service.dart';
+import 'package:sharing_cafe/view/components/custom_network_image.dart';
 import 'package:sharing_cafe/view/components/form_field.dart';
 import 'package:sharing_cafe/view/screens/blogs/blog_detail/components/comment.dart';
 
@@ -77,8 +78,8 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                       backgroundColor: Colors.transparent,
                       flexibleSpace: FlexibleSpaceBar(
                         background: ClipRRect(
-                          child: Image.network(
-                            blog.image,
+                          child: CustomNetworkImage(
+                            url: blog.image,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -225,8 +226,8 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                                       ClipRRect(
                                         borderRadius: const BorderRadius.all(
                                             Radius.circular(100.0)),
-                                        child: Image.network(
-                                          blog.ownerAvatar ??
+                                        child: CustomNetworkImage(
+                                          url: blog.ownerAvatar ??
                                               "https://picsum.photos/id/233/200/300",
                                           height: 64.0,
                                           width: 64.0,
@@ -285,7 +286,8 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                Html(data: blog.content),
+                                if (blog.content != null)
+                                  Html(data: blog.content),
                                 FutureBuilder(
                                     future:
                                         BlogService().loadComment(blog.blogId),

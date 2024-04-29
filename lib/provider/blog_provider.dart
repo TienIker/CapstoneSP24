@@ -7,10 +7,12 @@ class BlogProvider extends ChangeNotifier {
   // private
   List<BlogModel> _blogs = [];
   BlogModel? _blogDetails;
+  List<BlogModel> _myBlogs = [];
 
   // public
   List<BlogModel> get blogs => _blogs;
   BlogModel get blogDetails => _blogDetails!;
+  List<BlogModel> get myBlogs => _myBlogs;
 
   Future getBlogs() async {
     _blogs = await BlogService().getBlogs();
@@ -40,6 +42,11 @@ class BlogProvider extends ChangeNotifier {
 
   Future getBlogDetails(String blogId) async {
     _blogDetails = await BlogService().getBlogDetails(blogId);
+    notifyListeners();
+  }
+
+  Future getMyBlogs() async {
+    _myBlogs = await BlogService().getMyBlogs();
     notifyListeners();
   }
 }

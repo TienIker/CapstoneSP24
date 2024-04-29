@@ -11,6 +11,7 @@ import 'package:sharing_cafe/provider/event_provider.dart';
 import 'package:sharing_cafe/service/category_service.dart';
 import 'package:sharing_cafe/service/event_service.dart';
 import 'package:sharing_cafe/service/image_service.dart';
+import 'package:sharing_cafe/view/components/custom_network_image.dart';
 import 'package:sharing_cafe/view/components/date_time_picker.dart';
 import 'package:sharing_cafe/view/components/form_field.dart';
 import 'package:sharing_cafe/view/components/select_form.dart';
@@ -364,8 +365,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           borderRadius: BorderRadius.all(Radius.circular(16))),
                       alignment: Alignment.center,
                       child: _imageUrl != null && _imageUrl!.isNotEmpty
-                          ? Image.network(
-                              _imageUrl!,
+                          ? CustomNetworkImage(
+                              url: _imageUrl!,
                               fit: BoxFit.cover,
                             )
                           : Column(

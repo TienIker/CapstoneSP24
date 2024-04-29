@@ -2,7 +2,7 @@ import 'package:sharing_cafe/helper/datetime_helper.dart';
 
 class BlogModel {
   final String blogId;
-  final String userId;
+  final String? userId;
   final String? content;
   int likesCount;
   final int commentsCount;

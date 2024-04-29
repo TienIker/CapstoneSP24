@@ -11,9 +11,11 @@ import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 import 'package:sharing_cafe/provider/categories_provider.dart';
 import 'package:sharing_cafe/service/blog_service.dart';
 import 'package:sharing_cafe/service/image_service.dart';
+import 'package:sharing_cafe/view/components/custom_network_image.dart';
 import 'package:sharing_cafe/view/components/form_field.dart';
 import 'package:sharing_cafe/view/components/select_form.dart';
 import 'package:sharing_cafe/view/screens/blogs/create_blog/components/blog_editor.dart';
+import 'package:sharing_cafe/view/screens/blogs/my_blogs/my_blog_screen.dart';
 
 class CreateBlogScreen extends StatefulWidget {
   static String routeName = "/create-blog";
@@ -126,7 +128,7 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
                     isApprove: true);
                 if (result == true) {
                   // ignore: use_build_context_synchronously
-                  Navigator.pop(context);
+                  Navigator.pushNamed(context, MyBlogScreen.routeName);
                 }
               },
               style: ButtonStyle(
@@ -159,8 +161,8 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
                     borderRadius: BorderRadius.all(Radius.circular(16))),
                 alignment: Alignment.center,
                 child: _imageUrl != null && _imageUrl!.isNotEmpty
-                    ? Image.network(
-                        _imageUrl!,
+                    ? CustomNetworkImage(
+                        url: _imageUrl!,
                         fit: BoxFit.cover,
                       )
                     : Column(
