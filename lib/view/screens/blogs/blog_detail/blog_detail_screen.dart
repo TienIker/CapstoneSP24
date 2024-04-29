@@ -310,15 +310,21 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                                                   const NeverScrollableScrollPhysics(),
                                               itemBuilder: (context, index) {
                                                 return Comment(
-                                                    avtUrl: comments[index]
-                                                        .profileAvatar,
-                                                    name: comments[index]
-                                                        .userName,
-                                                    content:
-                                                        comments[index].content,
-                                                    isLiked: false,
-                                                    numberOfLikes: 0,
-                                                    time: "");
+                                                  id: comments[index].commentId,
+                                                  userId:
+                                                      comments[index].userId,
+                                                  avtUrl: comments[index]
+                                                      .profileAvatar,
+                                                  name:
+                                                      comments[index].userName,
+                                                  content:
+                                                      comments[index].content,
+                                                  isLiked: false,
+                                                  numberOfLikes: 0,
+                                                  time: "",
+                                                  onEditComment: () =>
+                                                      setState(() {}),
+                                                );
                                               })
                                         ],
                                       );

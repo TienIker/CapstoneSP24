@@ -96,6 +96,31 @@ class BlogService {
     }
   }
 
+  //update and delete comment
+  Future updateComment({
+    required String commentId,
+    required String content,
+  }) async {
+    var data = {"content": content};
+    var response = await ApiHelper().put('/blog/comment/$commentId', data);
+    if (response.statusCode == HttpStatus.ok) {
+      return true;
+    } else {
+      ErrorHelper.showError(
+          message: "Lỗi ${response.statusCode}: Không thể cập nhật bình luận");
+    }
+  }
+
+  Future deleteComment({required String commentId}) async {
+    var response = await ApiHelper().delete('/blog/comment/$commentId');
+    if (response.statusCode == HttpStatus.ok) {
+      return true;
+    } else {
+      ErrorHelper.showError(
+          message: "Lỗi ${response.statusCode}: Không thể xóa bình luận");
+    }
+  }
+
   Future<List<BlogModel>> getBlogsbyInterestId(interestId) async {
     try {
       var response = await ApiHelper().get('/user/blogs/interest/$interestId');
