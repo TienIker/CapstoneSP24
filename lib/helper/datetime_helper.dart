@@ -23,12 +23,18 @@ final class DateTimeHelper {
 
   static String howOldFrom(DateTime createdAt) {
     var diff = DateTime.now().difference(createdAt);
-    if (diff.inDays > 0) {
+    if (diff.inDays > 365) {
+      return "${(diff.inDays / 365).floor()} năm trước";
+    } else if (diff.inDays > 30) {
+      return "${(diff.inDays / 30).floor()} tháng trước";
+    } else if (diff.inDays > 0) {
       return "${diff.inDays} ngày trước";
     } else if (diff.inHours > 0) {
       return "${diff.inHours} giờ trước";
     } else if (diff.inMinutes > 0) {
       return "${diff.inMinutes} phút trước";
+    } else if (diff.inSeconds > 10) {
+      return "${diff.inSeconds} giây trước";
     } else {
       return "vài giây trước";
     }
