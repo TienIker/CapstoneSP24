@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/helper/datetime_helper.dart';
+import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 import 'package:sharing_cafe/provider/event_provider.dart';
+import 'package:sharing_cafe/service/event_service.dart';
 
 class EventDetailScreen extends StatefulWidget {
   static String routeName = "/event-detail";
@@ -14,22 +16,27 @@ class EventDetailScreen extends StatefulWidget {
 
 class _EventDetailScreenState extends State<EventDetailScreen> {
   bool _isLoading = false;
+  bool _canJoinEvent = true;
+  String _loggedUser = "";
+  String id = "";
 
   @override
   void initState() {
     setState(() {
       _isLoading = true;
     });
-    Future.delayed(Duration.zero, () {
+    SharedPrefHelper.getUserId().then((value) {
       final Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-      var id = arguments['id'];
-      return id;
-    })
-        .then((value) => Provider.of<EventProvider>(context, listen: false)
-            .getEventDetails(value))
+      id = arguments['id'];
+      _loggedUser = value;
+    }).then((_) => Provider.of<EventProvider>(context, listen: false)
+        .getEventDetails(id)
+        .then((value) => EventService().getEventParticipants(id))
+        .then((value) => _canJoinEvent =
+            !value.any((element) => element.userId == _loggedUser))
         .then((_) => setState(() {
               _isLoading = false;
-            }));
+            })));
 
     super.initState();
   }
@@ -84,27 +91,54 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      // Handle attend action
-                                    },
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateColor.resolveWith(
-                                              (states) => kPrimaryColor),
-                                      padding:
-                                          MaterialStateProperty.resolveWith(
-                                              (states) =>
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 32.0)),
-                                    ),
-                                    child: const Text(
-                                      'Sẽ tham gia',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
+                                  _canJoinEvent
+                                      ? TextButton(
+                                          onPressed: () async {
+                                            var res = await EventService()
+                                                .joinEvent(
+                                                    eventDetails.eventId);
+                                            if (res) {
+                                              setState(() {
+                                                _canJoinEvent = false;
+                                              });
+                                            }
+                                          },
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateColor.resolveWith(
+                                                    (states) => kPrimaryColor),
+                                            padding: MaterialStateProperty
+                                                .resolveWith((states) =>
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 32.0)),
+                                          ),
+                                          child: const Text(
+                                            'Tham gia',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        )
+                                      : TextButton(
+                                          onPressed: () {
+                                            // Handle attend action
+                                          },
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateColor.resolveWith(
+                                                    (states) => Colors.green),
+                                            padding: MaterialStateProperty
+                                                .resolveWith((states) =>
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 32.0)),
+                                          ),
+                                          child: const Text(
+                                            'Sẽ tham gia',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
                                   // TextButton(
                                   //   onPressed: () {
                                   //     // Handle attend action

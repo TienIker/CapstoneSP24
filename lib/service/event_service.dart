@@ -7,6 +7,7 @@ import 'package:sharing_cafe/helper/api_helper.dart';
 import 'package:sharing_cafe/helper/error_helper.dart';
 import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 import 'package:sharing_cafe/model/event_model.dart';
+import 'package:sharing_cafe/model/event_participant.dart';
 
 class EventService {
   Future<List<EventModel>> getEvents(String? search) async {
@@ -174,5 +175,42 @@ class EventService {
       print(e);
     }
     return false;
+  }
+
+  Future joinEvent(String eventId) async {
+    try {
+      var endpoint = "/auth/user/event/join-event?event_id=$eventId";
+      var response = await ApiHelper().post(endpoint, {});
+      if (response.statusCode == HttpStatus.ok) {
+        return true;
+      }
+      ErrorHelper.showError(
+          message: "Lỗi ${response.statusCode}: Không thể tham gia sự kiện");
+    } catch (e) {
+      print(e);
+    }
+    return false;
+  }
+
+  // get list event-participants
+  Future<List<EventParticipantModel>> getEventParticipants(
+      String eventId) async {
+    try {
+      var endpoint = "/auth/user/event/event-participants?event_id=$eventId";
+      var response = await ApiHelper().get(endpoint);
+      if (response.statusCode == HttpStatus.ok) {
+        var jsonList = json.decode(response.body) as List;
+        return jsonList
+            .map<EventParticipantModel>(
+                (e) => EventParticipantModel.fromJson(e))
+            .toList();
+      }
+      ErrorHelper.showError(
+          message:
+              "Lỗi ${response.statusCode}: Không thể lấy danh sách người tham gia sự kiện");
+    } catch (e) {
+      print(e);
+    }
+    return [];
   }
 }
