@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class Comment extends StatefulWidget {
   final String avtUrl;
@@ -57,35 +58,38 @@ class _CommentState extends State<Comment> {
           ),
         ),
         Text(widget.content),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            children: [
-              InkWell(
-                  onTap: () {
-                    setState(() {
-                      _isLiked = !_isLiked;
-                    });
-                  },
-                  child: Icon(
-                    _isLiked ? Icons.favorite : Icons.favorite_outline,
-                    color: Colors.red,
-                  )),
-              const SizedBox(
-                width: 8,
-              ),
-              Text(
-                "${widget.numberOfLikes}",
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-              const SizedBox(
-                width: 32,
-              ),
-              Text(
-                widget.time,
-                style: TextStyle(color: Colors.grey[600]),
-              )
-            ],
+        Visibility(
+          visible: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              children: [
+                InkWell(
+                    onTap: () {
+                      setState(() {
+                        _isLiked = !_isLiked;
+                      });
+                    },
+                    child: Icon(
+                      _isLiked ? Icons.favorite : Icons.favorite_outline,
+                      color: Colors.red,
+                    )),
+                const SizedBox(
+                  width: 8,
+                ),
+                Text(
+                  "${widget.numberOfLikes}",
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+                const SizedBox(
+                  width: 32,
+                ),
+                Text(
+                  widget.time,
+                  style: TextStyle(color: Colors.grey[600]),
+                )
+              ],
+            ),
           ),
         )
       ],

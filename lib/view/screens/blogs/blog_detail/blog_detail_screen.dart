@@ -18,6 +18,7 @@ class BlogDetailScreen extends StatefulWidget {
 
 class _BlogDetailScreenState extends State<BlogDetailScreen> {
   bool _isLoading = false;
+  bool _isLiked = false;
 
   final TextEditingController _contentEditingController =
       TextEditingController();
@@ -100,10 +101,28 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const SizedBox(height: 8),
-                                Text(
-                                  blog.title,
-                                  textAlign: TextAlign.left,
-                                  style: headingStyle,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      blog.title,
+                                      textAlign: TextAlign.left,
+                                      style: headingStyle,
+                                    ),
+                                    InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            _isLiked = !_isLiked;
+                                          });
+                                        },
+                                        child: Icon(
+                                          _isLiked
+                                              ? Icons.favorite
+                                              : Icons.favorite_outline,
+                                          color: Colors.red,
+                                        )),
+                                  ],
                                 ),
                                 const SizedBox(height: 8),
                                 const Divider(),
