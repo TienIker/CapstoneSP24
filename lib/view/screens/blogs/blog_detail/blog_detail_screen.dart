@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
+import 'package:sharing_cafe/helper/error_helper.dart';
+import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 import 'package:sharing_cafe/model/comment_model.dart';
 import 'package:sharing_cafe/provider/blog_provider.dart';
 import 'package:sharing_cafe/service/blog_service.dart';
@@ -18,7 +20,6 @@ class BlogDetailScreen extends StatefulWidget {
 
 class _BlogDetailScreenState extends State<BlogDetailScreen> {
   bool _isLoading = false;
-  bool _isLiked = false;
 
   final TextEditingController _contentEditingController =
       TextEditingController();
@@ -85,9 +86,87 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                       iconTheme: const IconThemeData(color: Colors.white),
                       actions: [
                         IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showMenu(
+                                  context: context,
+                                  position: const RelativeRect.fromLTRB(
+                                      100, 50, 0, 0),
+                                  items: [
+                                    PopupMenuItem(
+                                      onTap: () {
+                                        final TextEditingController
+                                            reportContentController =
+                                            TextEditingController();
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                title: const Text("Báo cáo"),
+                                                content: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    const Text(
+                                                        "Bạn có chắc chắn muốn báo cáo bài viết này?"),
+                                                    const SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    //text field for report content
+                                                    KFormField(
+                                                      hintText:
+                                                          "Nội dung báo cáo",
+                                                      maxLines: 3,
+                                                      controller:
+                                                          reportContentController,
+                                                    ),
+                                                  ],
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: const Text("Hủy"),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () async {
+                                                      if (reportContentController
+                                                          .text.isEmpty) {
+                                                        ErrorHelper.showError(
+                                                            message:
+                                                                "Vui lòng nhập nội dung báo cáo");
+                                                        return;
+                                                      }
+                                                      var loggedUser =
+                                                          await SharedPrefHelper
+                                                              .getUserId();
+                                                      var res = await BlogService()
+                                                          .reportBlog(
+                                                              reporterId:
+                                                                  loggedUser,
+                                                              blogId:
+                                                                  blog.blogId,
+                                                              content:
+                                                                  reportContentController
+                                                                      .text);
+                                                      if (res) {
+                                                        // ignore: use_build_context_synchronously
+                                                        Navigator.pop(context);
+                                                      }
+                                                    },
+                                                    child:
+                                                        const Text("Báo cáo"),
+                                                  ),
+                                                ],
+                                              );
+                                            });
+                                      },
+                                      child: const Text("Báo cáo"),
+                                    ),
+                                  ]);
+                            },
                             icon: const Icon(
-                              Icons.send_outlined,
+                              Icons.more_vert,
                               color: Colors.white,
                             ))
                       ],
@@ -105,23 +184,35 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      blog.title,
-                                      textAlign: TextAlign.left,
-                                      style: headingStyle,
+                                    Expanded(
+                                      child: Text(
+                                        blog.title,
+                                        textAlign: TextAlign.left,
+                                        style: headingStyle,
+                                      ),
                                     ),
-                                    InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            _isLiked = !_isLiked;
-                                          });
-                                        },
-                                        child: Icon(
-                                          _isLiked
-                                              ? Icons.favorite
-                                              : Icons.favorite_outline,
-                                          color: Colors.red,
-                                        )),
+                                    Row(
+                                      children: [
+                                        InkWell(
+                                            onTap: () {
+                                              value.setLike();
+                                            },
+                                            child: Icon(
+                                              blog.isLike
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_outline,
+                                              color: Colors.red,
+                                            )),
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Text(
+                                          "${blog.likesCount}",
+                                          style: TextStyle(
+                                              color: Colors.grey[700]),
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 8),

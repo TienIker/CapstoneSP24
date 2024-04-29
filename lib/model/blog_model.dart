@@ -4,7 +4,7 @@ class BlogModel {
   final String blogId;
   final String userId;
   final String? content;
-  final int likesCount;
+  int likesCount;
   final int commentsCount;
   final bool isApprove;
   final DateTime createdAt;
@@ -13,6 +13,7 @@ class BlogModel {
   final String ownerName;
   final String? ownerAvatar;
   final String category;
+  bool isLike;
 
   BlogModel({
     required this.blogId,
@@ -26,6 +27,7 @@ class BlogModel {
     required this.title,
     required this.ownerName,
     required this.category,
+    required this.isLike,
     this.ownerAvatar,
   });
 
@@ -43,6 +45,7 @@ class BlogModel {
       ownerName: json['user_name'],
       category: json['name'],
       ownerAvatar: json['profile_avatar'],
+      isLike: json['is_like'] ?? false,
     );
   }
 }
