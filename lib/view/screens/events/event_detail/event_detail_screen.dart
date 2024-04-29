@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/helper/datetime_helper.dart';
+import 'package:sharing_cafe/helper/error_helper.dart';
 import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 import 'package:sharing_cafe/provider/event_provider.dart';
 import 'package:sharing_cafe/service/event_service.dart';
+import 'package:sharing_cafe/view/components/form_field.dart';
 
 class EventDetailScreen extends StatefulWidget {
   static String routeName = "/event-detail";
@@ -71,6 +73,91 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       ),
                     ),
                     iconTheme: const IconThemeData(color: Colors.white),
+                    actions: [
+                      IconButton(
+                          onPressed: () {
+                            showMenu(
+                                context: context,
+                                position:
+                                    const RelativeRect.fromLTRB(100, 50, 0, 0),
+                                items: [
+                                  PopupMenuItem(
+                                    onTap: () {
+                                      final TextEditingController
+                                          reportContentController =
+                                          TextEditingController();
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: const Text("Báo cáo"),
+                                              content: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Text(
+                                                      "Bạn có chắc chắn muốn báo cáo bài viết này?"),
+                                                  const SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  //text field for report content
+                                                  KFormField(
+                                                    hintText:
+                                                        "Nội dung báo cáo",
+                                                    maxLines: 3,
+                                                    controller:
+                                                        reportContentController,
+                                                  ),
+                                                ],
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: const Text("Hủy"),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () async {
+                                                    if (reportContentController
+                                                        .text.isEmpty) {
+                                                      ErrorHelper.showError(
+                                                          message:
+                                                              "Vui lòng nhập nội dung báo cáo");
+                                                      return;
+                                                    }
+                                                    var loggedUser =
+                                                        await SharedPrefHelper
+                                                            .getUserId();
+                                                    var res = await EventService()
+                                                        .reportEvent(
+                                                            reporterId:
+                                                                loggedUser,
+                                                            eventId:
+                                                                eventDetails
+                                                                    .eventId,
+                                                            content:
+                                                                reportContentController
+                                                                    .text);
+                                                    if (res) {
+                                                      // ignore: use_build_context_synchronously
+                                                      Navigator.pop(context);
+                                                    }
+                                                  },
+                                                  child: const Text("Báo cáo"),
+                                                ),
+                                              ],
+                                            );
+                                          });
+                                    },
+                                    child: const Text("Báo cáo"),
+                                  ),
+                                ]);
+                          },
+                          icon: const Icon(
+                            Icons.more_vert,
+                            color: Colors.white,
+                          ))
+                    ],
                   ),
                   SliverList(
                     delegate: SliverChildListDelegate(

@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sharing_cafe/helper/api_helper.dart';
 import 'package:sharing_cafe/helper/error_helper.dart';
 import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
@@ -225,6 +226,27 @@ class EventService {
           message: "Lỗi ${response.statusCode}: Không thể rời khỏi sự kiện");
     } catch (e) {
       print(e);
+    }
+    return false;
+  }
+
+  // report event
+  Future reportEvent(
+      {required String reporterId,
+      required String eventId,
+      required String content}) async {
+    var data = {
+      "reporter_id": reporterId,
+      "event_id": eventId,
+      "content": content
+    };
+    var response = await ApiHelper().post('/user/events/report', data);
+    if (response.statusCode == HttpStatus.ok) {
+      Fluttertoast.showToast(msg: "Báo cáo event thành công");
+      return true;
+    } else {
+      ErrorHelper.showError(
+          message: "Lỗi ${response.statusCode}: Không thể báo cáo event");
     }
     return false;
   }
