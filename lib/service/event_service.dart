@@ -213,4 +213,19 @@ class EventService {
     }
     return [];
   }
+
+  Future leaveEvent(String eventId) async {
+    try {
+      var endpoint = "/auth/user/event/leave-event?event_id=$eventId";
+      var response = await ApiHelper().put(endpoint, {});
+      if (response.statusCode == HttpStatus.ok) {
+        return true;
+      }
+      ErrorHelper.showError(
+          message: "Lỗi ${response.statusCode}: Không thể rời khỏi sự kiện");
+    } catch (e) {
+      print(e);
+    }
+    return false;
+  }
 }

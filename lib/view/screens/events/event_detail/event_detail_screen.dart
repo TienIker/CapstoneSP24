@@ -119,25 +119,39 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                                 fontWeight: FontWeight.bold),
                                           ),
                                         )
-                                      : TextButton(
-                                          onPressed: () {
-                                            // Handle attend action
-                                          },
-                                          style: ButtonStyle(
-                                            backgroundColor:
-                                                MaterialStateColor.resolveWith(
-                                                    (states) => Colors.green),
-                                            padding: MaterialStateProperty
-                                                .resolveWith((states) =>
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 32.0)),
-                                          ),
-                                          child: const Text(
-                                            'Sẽ tham gia',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold),
-                                          ),
+                                      : Row(
+                                          children: [
+                                            TextButton(
+                                              onPressed: () async {
+                                                var res = await EventService()
+                                                    .leaveEvent(
+                                                        eventDetails.eventId);
+                                                if (res) {
+                                                  setState(() {
+                                                    _canJoinEvent = true;
+                                                  });
+                                                }
+                                              },
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    MaterialStateColor
+                                                        .resolveWith((states) =>
+                                                            kErrorColor),
+                                                padding: MaterialStateProperty
+                                                    .resolveWith((states) =>
+                                                        const EdgeInsets
+                                                            .symmetric(
+                                                            horizontal: 32.0)),
+                                              ),
+                                              child: const Text(
+                                                'Hủy tham gia',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                   // TextButton(
                                   //   onPressed: () {
