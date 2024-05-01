@@ -84,14 +84,15 @@ class EventCard extends StatelessWidget {
                       ),
                       // 3 dot button
                       const Spacer(),
-                      IconButton(
-                        key: moreButtonKey,
-                        icon: const Icon(
-                          Icons.more_vert,
-                          color: kPrimaryColor,
+                      if (onMoreButtonClick != null)
+                        IconButton(
+                          key: moreButtonKey,
+                          icon: const Icon(
+                            Icons.more_vert,
+                            color: kPrimaryColor,
+                          ),
+                          onPressed: onMoreButtonClick,
                         ),
-                        onPressed: onMoreButtonClick,
-                      ),
                     ],
                   ),
                 ],

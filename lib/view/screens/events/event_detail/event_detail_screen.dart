@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
@@ -140,7 +142,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                                                 reportContentController
                                                                     .text);
                                                     if (res) {
-                                                      // ignore: use_build_context_synchronously
                                                       Navigator.pop(context);
                                                     }
                                                   },
@@ -186,6 +187,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                                 .joinEvent(
                                                     eventDetails.eventId);
                                             if (res) {
+                                              Provider.of<EventProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .getEventDetails(id);
                                               setState(() {
                                                 _canJoinEvent = false;
                                               });
@@ -215,6 +220,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                                     .leaveEvent(
                                                         eventDetails.eventId);
                                                 if (res) {
+                                                  Provider.of<EventProvider>(
+                                                          context,
+                                                          listen: false)
+                                                      .getEventDetails(id);
                                                   setState(() {
                                                     _canJoinEvent = true;
                                                   });

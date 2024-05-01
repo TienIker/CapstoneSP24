@@ -9,9 +9,8 @@ import 'package:sharing_cafe/provider/account_provider.dart';
 import 'package:sharing_cafe/provider/user_profile_provider.dart';
 import 'package:sharing_cafe/view/components/custom_network_image.dart';
 import 'package:sharing_cafe/view/screens/appointment/appointment_history.dart';
-import 'package:sharing_cafe/view/screens/auth/complete_profile/complete_profile_screen.dart';
-import 'package:sharing_cafe/view/screens/auth/complete_profile/select_interest_screen.dart';
 import 'package:sharing_cafe/view/screens/auth/login/login_screen.dart';
+import 'package:sharing_cafe/view/screens/blogs/my_blogs/my_blog_screen.dart';
 import 'package:sharing_cafe/view/screens/events/my_event/my_event_screen.dart';
 import 'package:sharing_cafe/view/screens/profiles/preview_my_profile/preview_my_profile_screen.dart';
 import 'package:sharing_cafe/view/screens/profiles/profile_page/components/profile_menu.dart';
@@ -145,21 +144,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ProfileMenu(
                           title: "Blog của bạn",
                           icon: LineAwesomeIcons.blog,
-                          onPress: () {}),
-                      ProfileMenu(
-                          title: "Sở thích của bạn",
-                          icon: LineAwesomeIcons.ice_cream,
                           onPress: () {
                             Navigator.pushNamed(
-                                context, SelectInterestScreen.routeName);
+                                context, MyBlogScreen.routeName);
                           }),
-                      ProfileMenu(
-                          title: "Hoàn thiện hồ sơ",
-                          icon: LineAwesomeIcons.candy_cane,
-                          onPress: () {
-                            Navigator.pushNamed(
-                                context, CompleteProfileScreen.routeName);
-                          }),
+                      // ProfileMenu(
+                      //     title: "Sở thích của bạn",
+                      //     icon: LineAwesomeIcons.ice_cream,
+                      //     onPress: () {
+                      //       Navigator.pushNamed(
+                      //           context, SelectInterestScreen.routeName);
+                      //     }),
+                      // ProfileMenu(
+                      //     title: "Hoàn thiện hồ sơ",
+                      //     icon: LineAwesomeIcons.candy_cane,
+                      //     onPress: () {
+                      //       Navigator.pushNamed(
+                      //           context, CompleteProfileScreen.routeName);
+                      //     }),
                       ProfileMenu(
                           title: "Lịch sử cuộc hẹn",
                           icon: LineAwesomeIcons.history,

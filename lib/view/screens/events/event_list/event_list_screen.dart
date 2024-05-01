@@ -139,21 +139,12 @@ class _EventListScreenState extends State<EventListScreen> {
                           },
                         ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Sự kiện mới",
-                      style: heading2Style,
-                    ),
-                    IconButton(
-                        onPressed: () {/* ... */},
-                        icon: const Icon(
-                          Icons.arrow_forward,
-                          size: 24,
-                          color: kPrimaryColor,
-                        ))
-                  ],
+                const SizedBox(
+                  height: 16,
+                ),
+                const Text(
+                  "Sự kiện mới",
+                  style: heading2Style,
                 ),
                 _isLoadingNewEvents
                     ? const Center(

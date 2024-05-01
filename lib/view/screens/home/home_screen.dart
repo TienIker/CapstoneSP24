@@ -180,21 +180,12 @@ class _HomeScreen extends State<HomeScreen> {
                           },
                         ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Blogs phổ biến",
-                      style: heading2Style,
-                    ),
-                    IconButton(
-                        onPressed: () {/* ... */},
-                        icon: const Icon(
-                          Icons.arrow_forward,
-                          size: 24,
-                          color: kPrimaryColor,
-                        ))
-                  ],
+                const SizedBox(
+                  height: 16,
+                ),
+                const Text(
+                  "Blogs phổ biến",
+                  style: heading2Style,
                 ),
                 _isLoading
                     ? const Center(

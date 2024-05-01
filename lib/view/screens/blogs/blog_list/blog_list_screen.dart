@@ -4,7 +4,6 @@ import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/helper/datetime_helper.dart';
 import 'package:sharing_cafe/provider/blog_provider.dart';
 import 'package:sharing_cafe/provider/interest_provider.dart';
-import 'package:sharing_cafe/view/screens/blogs/all_blog/all_blog_screen.dart';
 import 'package:sharing_cafe/view/screens/blogs/blog_categories.dart/blog_categories_screen.dart';
 import 'package:sharing_cafe/view/screens/blogs/blog_category.dart/blog_category_screen.dart';
 import 'package:sharing_cafe/view/screens/blogs/blog_detail/blog_detail_screen.dart';
@@ -67,7 +66,7 @@ class _BlogListScreenState extends State<BlogListScreen> {
           ),
           IconButton(
             icon: const Icon(
-              Icons.calendar_month_outlined,
+              Icons.feed_outlined,
               size: 24,
             ),
             onPressed: () {
@@ -190,28 +189,15 @@ class _BlogListScreenState extends State<BlogListScreen> {
                         },
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             "Blogs mới",
                             style: heading2Style,
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, AllBlogScreen.routeName);
-                            },
-                            child: const Text(
-                              "Xem tất cả",
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: kPrimaryColor),
-                            ),
-                          )
                         ],
                       ),
                     ),
