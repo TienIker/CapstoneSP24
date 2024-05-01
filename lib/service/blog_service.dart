@@ -230,4 +230,8 @@ class BlogService {
     }
     return false;
   }
+
+  Future deleteBlog(String blogId) {
+    return ApiHelper().delete('/blog/$blogId');
+  }
 }

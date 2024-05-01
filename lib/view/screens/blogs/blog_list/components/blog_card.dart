@@ -10,6 +10,8 @@ class BlogCard extends StatelessWidget {
   final String ownerName;
   final String time;
   final Function() onTap;
+  final Function()? onMoreButtonClick;
+  final GlobalKey? moreButtonKey;
 
   const BlogCard(
       {super.key,
@@ -19,7 +21,9 @@ class BlogCard extends StatelessWidget {
       required this.onTap,
       required this.avtUrl,
       required this.ownerName,
-      required this.time});
+      required this.time,
+      this.onMoreButtonClick,
+      this.moreButtonKey});
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +92,15 @@ class BlogCard extends StatelessWidget {
                 ],
               ),
             ),
+            if (onMoreButtonClick != null)
+              IconButton(
+                key: moreButtonKey,
+                icon: const Icon(
+                  Icons.more_vert,
+                  color: kPrimaryColor,
+                ),
+                onPressed: onMoreButtonClick,
+              ),
           ],
         ),
       ),

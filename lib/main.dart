@@ -14,8 +14,8 @@ import 'package:sharing_cafe/provider/home_provider.dart';
 import 'package:sharing_cafe/provider/interest_provider.dart';
 import 'package:sharing_cafe/provider/user_profile_provider.dart';
 import 'package:sharing_cafe/service/location_service.dart';
-import 'package:sharing_cafe/view/screens/auth/login/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sharing_cafe/view/screens/auth/splash/splash_screen.dart';
 import 'firebase_options.dart';
 
 import 'routes.dart';
@@ -118,7 +118,7 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         title: 'Sharing Cafe',
         theme: AppTheme.lightTheme(context),
-        initialRoute: LoginScreen.routeName,
+        initialRoute: SplashScreen.routeName,
         routes: routes,
       ),
     );

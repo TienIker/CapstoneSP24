@@ -1,4 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 
 import '../../../../constants.dart';
 import '../login/login_screen.dart';
@@ -83,8 +86,21 @@ class _SplashScreenState extends State<SplashScreen> {
                       ),
                       const Spacer(flex: 3),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, LoginScreen.routeName);
+                        onPressed: () async {
+                          var userId = await SharedPrefHelper.getUserId();
+                          if (userId.isEmpty) {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              LoginScreen.routeName,
+                              (route) => false,
+                            );
+                          } else {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              LoginScreen.routeName,
+                              (route) => false,
+                            );
+                          }
                         },
                         child: const Text("Tiếp tục"),
                       ),

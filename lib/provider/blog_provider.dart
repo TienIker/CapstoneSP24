@@ -85,4 +85,11 @@ class BlogProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // delete blog
+  Future deleteBlog(String blogId) async {
+    await BlogService().deleteBlog(blogId);
+    _myBlogs.removeWhere((element) => element.blogId == blogId);
+    notifyListeners();
+  }
 }

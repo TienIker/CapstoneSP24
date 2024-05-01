@@ -62,7 +62,7 @@ class _MyBlogScreenState extends State<MyBlogScreen> {
                   return ListView.builder(
                     itemCount: blogs.length,
                     itemBuilder: (context, index) {
-                      // GlobalKey moreButtonKey = GlobalKey();
+                      GlobalKey moreButtonKey = GlobalKey();
                       return BlogCard(
                         imageUrl: blogs[index].image,
                         title: blogs[index].title,
@@ -78,80 +78,79 @@ class _MyBlogScreenState extends State<MyBlogScreen> {
                                 'id': blogs[index].blogId,
                               });
                         },
-                        // moreButtonKey: moreButtonKey,
-                        // onMoreButtonClick: () {
-                        //   // Get the RenderBox object
-                        //   final RenderBox renderBox =
-                        //       moreButtonKey.currentContext?.findRenderObject()
-                        //           as RenderBox;
-                        //   final Offset offset =
-                        //       renderBox.localToGlobal(Offset.zero);
+                        moreButtonKey: moreButtonKey,
+                        onMoreButtonClick: () {
+                          // Get the RenderBox object
+                          final RenderBox renderBox =
+                              moreButtonKey.currentContext?.findRenderObject()
+                                  as RenderBox;
+                          final Offset offset =
+                              renderBox.localToGlobal(Offset.zero);
 
-                        //   // Calculate the position for the menu
-                        //   final RelativeRect position = RelativeRect.fromLTRB(
-                        //       offset.dx, // This is the left position.
-                        //       offset.dy, // This is the top position.
-                        //       30, // This is the right position (not used here).
-                        //       0 // This is the bottom position (not used here).
-                        //       );
+                          // Calculate the position for the menu
+                          final RelativeRect position = RelativeRect.fromLTRB(
+                              offset.dx, // This is the left position.
+                              offset.dy, // This is the top position.
+                              30, // This is the right position (not used here).
+                              0 // This is the bottom position (not used here).
+                              );
 
-                        //   // Show the menu
-                        //   showMenu(
-                        //     context: context,
-                        //     position: position,
-                        //     items: [
-                        //       PopupMenuItem(
-                        //         value: "edit",
-                        //         onTap: () {
-                        //           Navigator.pushNamed(
-                        //               context, CreateEventScreen.routeName,
-                        //               arguments: {'id': blogs[index].eventId});
-                        //         },
-                        //         child: const Text("Chỉnh sửa"),
-                        //       ),
-                        //       PopupMenuItem(
-                        //         value: "delete",
-                        //         onTap: () {
-                        //           showDialog(
-                        //             context: context,
-                        //             builder: (context) {
-                        //               return AlertDialog(
-                        //                 title: const Text("Xác nhận"),
-                        //                 content: const Text(
-                        //                     "Bạn có chắc chắn muốn xóa sự kiện này không?"),
-                        //                 actions: [
-                        //                   TextButton(
-                        //                     onPressed: () {
-                        //                       Navigator.pop(context);
-                        //                     },
-                        //                     child: const Text("Hủy"),
-                        //                   ),
-                        //                   TextButton(
-                        //                     onPressed: () {
-                        //                       Provider.of<EventProvider>(
-                        //                               context,
-                        //                               listen: false)
-                        //                           .deleteEvent(
-                        //                               blogs[index].eventId)
-                        //                           .then((value) {
-                        //                         Navigator.pop(context);
-                        //                       });
-                        //                     },
-                        //                     child: const Text("Xóa"),
-                        //                   ),
-                        //                 ],
-                        //               );
-                        //             },
-                        //           );
-                        //         },
-                        //         child: const Text(
-                        //           "Xóa",
-                        //           style: TextStyle(color: Colors.red),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   );
-                        // },
+                          // Show the menu
+                          showMenu(
+                            context: context,
+                            position: position,
+                            items: [
+                              PopupMenuItem(
+                                value: "edit",
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, CreateBlogScreen.routeName,
+                                      arguments: {'id': blogs[index].blogId});
+                                },
+                                child: const Text("Chỉnh sửa"),
+                              ),
+                              PopupMenuItem(
+                                value: "delete",
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Text("Xác nhận"),
+                                        content: const Text(
+                                            "Bạn có chắc chắn muốn xóa sự kiện này không?"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text("Hủy"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Provider.of<BlogProvider>(context,
+                                                      listen: false)
+                                                  .deleteBlog(
+                                                      blogs[index].blogId)
+                                                  .then((value) {
+                                                Navigator.pop(context);
+                                              });
+                                            },
+                                            child: const Text("Xóa"),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                child: const Text(
+                                  "Xóa",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       );
                     },
                   );

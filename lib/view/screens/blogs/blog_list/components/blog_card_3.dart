@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sharing_cafe/view/components/custom_network_image.dart';
 
 class BlogCard3 extends StatelessWidget {
   final String imageUrl;
@@ -26,13 +27,9 @@ class BlogCard3 extends StatelessWidget {
             borderRadius: const BorderRadius.all(Radius.circular(8.0)),
             child: Stack(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(imageUrl),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                CustomNetworkImage(
+                  url: imageUrl,
+                  fit: BoxFit.cover,
                 ),
                 Positioned(
                   bottom: 16,

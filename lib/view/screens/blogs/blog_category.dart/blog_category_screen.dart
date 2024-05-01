@@ -3,6 +3,7 @@ import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/helper/datetime_helper.dart';
 import 'package:sharing_cafe/model/blog_model.dart';
 import 'package:sharing_cafe/service/blog_service.dart';
+import 'package:sharing_cafe/view/components/custom_network_image.dart';
 import 'package:sharing_cafe/view/screens/blogs/blog_detail/blog_detail_screen.dart';
 import 'package:sharing_cafe/view/screens/blogs/blog_list/components/blog_card.dart';
 
@@ -44,13 +45,9 @@ class _BlogCategoryScreenState extends State<BlogCategoryScreen> {
                   borderRadius: const BorderRadius.all(Radius.circular(8.0)),
                   child: Stack(
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(interestImageUrl),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                      CustomNetworkImage(
+                        url: interestImageUrl,
+                        fit: BoxFit.cover,
                       ),
                       Positioned(
                         bottom: 16,
