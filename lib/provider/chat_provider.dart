@@ -9,6 +9,7 @@ import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 import 'package:sharing_cafe/model/chat_message_model.dart';
 import 'package:sharing_cafe/model/schedule_model.dart';
 import 'package:sharing_cafe/service/chat_service.dart';
+import 'package:sharing_cafe/service/match_service.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:sharing_cafe/helper/api_helper.dart';
 
@@ -261,5 +262,14 @@ class ChatProvider extends ChangeNotifier {
         });
     notifyListeners();
     return _locationAutocompleteField;
+  }
+
+  // block
+  Future blockUser() async {
+    try {
+      return await MatchService().blockUser(_userId);
+    } catch (e) {
+      ErrorHelper.showError(message: "Không thể chặn người dùng");
+    }
   }
 }

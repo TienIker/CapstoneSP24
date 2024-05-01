@@ -234,4 +234,29 @@ class BlogService {
   Future deleteBlog(String blogId) {
     return ApiHelper().delete('/blog/$blogId');
   }
+
+  Future updateBlog(
+      {required String blogId,
+      required String userId,
+      required String interestId,
+      required String content,
+      required String title,
+      required String image}) async {
+    var data = {
+      "user_id": userId,
+      "interest_id": interestId,
+      "content": content.toString(),
+      "title": title,
+      "image": image,
+    };
+    var response = await ApiHelper().put('/blog/$blogId', data);
+    if (response.statusCode == HttpStatus.ok) {
+      Fluttertoast.showToast(msg: "Cập nhật blog thành công");
+      return true;
+    } else {
+      ErrorHelper.showError(
+          message: "Lỗi ${response.statusCode}: Không thể cập nhật blog");
+    }
+    return false;
+  }
 }

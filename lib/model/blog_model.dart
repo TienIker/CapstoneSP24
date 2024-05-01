@@ -13,6 +13,7 @@ class BlogModel {
   final String ownerName;
   final String? ownerAvatar;
   final String category;
+  final String? interestId;
   bool isLike;
 
   BlogModel({
@@ -28,6 +29,7 @@ class BlogModel {
     required this.ownerName,
     required this.category,
     required this.isLike,
+    required this.interestId,
     this.ownerAvatar,
   });
 
@@ -46,6 +48,7 @@ class BlogModel {
       category: json['name'],
       ownerAvatar: json['profile_avatar'],
       isLike: json['is_like'] ?? false,
+      interestId: json['interest_id'],
     );
   }
 }

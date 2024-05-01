@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:multi_dropdown/multiselect_dropdown.dart';
@@ -96,6 +96,37 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Text(_userName),
         actions: [
+          //  IconButton(
+          //     onPressed: () {
+          //       showDialog(
+          //           context: context,
+          //           builder: (context) {
+          //             return AlertDialog(
+          //               title: const Text("Chặn người dùng"),
+          //               content: const Text(
+          //                   "Bạn có chắc chắn muốn chặn người dùng này không?"),
+          //               actions: [
+          //                 TextButton(
+          //                     onPressed: () {
+          //                       Navigator.of(context).pop();
+          //                     },
+          //                     child: const Text("Hủy")),
+          //                 TextButton(
+          //                     onPressed: () async {
+          //                       var res = await Provider.of<ChatProvider>(
+          //                               context,
+          //                               listen: false)
+          //                           .blockUser();
+          //                       if (res) {
+          //                         Navigator.of(context).pop();
+          //                       }
+          //                     },
+          //                     child: const Text("Chặn")),
+          //               ],
+          //             );
+          //           });
+          //     },
+          //     icon: const Icon(Icons.block)),
           IconButton(
               onPressed: () {
                 Provider.of<ChatProvider>(context, listen: false)
@@ -456,7 +487,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: TextField(
                           controller: _controller,
                           decoration: InputDecoration(
-                            hintText: "Type a message...",
+                            hintText: "Trò chuyện...",
                             constraints: const BoxConstraints(
                               maxHeight: 50,
                               minHeight: 10,

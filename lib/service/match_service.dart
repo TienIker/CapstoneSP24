@@ -73,4 +73,17 @@ class MatchService {
     }
     throw Exception("Get profile info error: ${response.statusCode}");
   }
+
+  // /api/auth/user/block/block-user
+  Future<bool> blockUser(String userId) async {
+    var endpoint = "/auth/user/block/block-user";
+    var payload = {
+      "blocked_id": userId,
+    };
+    var response = await ApiHelper().post(endpoint, payload);
+    if (response.statusCode == HttpStatus.ok) {
+      return true;
+    }
+    throw Exception("Lỗi ${response.statusCode}");
+  }
 }

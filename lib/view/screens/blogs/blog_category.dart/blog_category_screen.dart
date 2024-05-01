@@ -48,6 +48,7 @@ class _BlogCategoryScreenState extends State<BlogCategoryScreen> {
                       CustomNetworkImage(
                         url: interestImageUrl,
                         fit: BoxFit.cover,
+                        width: 500,
                       ),
                       Positioned(
                         bottom: 16,

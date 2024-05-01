@@ -105,7 +105,7 @@ class _MyBlogScreenState extends State<MyBlogScreen> {
                                 onTap: () {
                                   Navigator.pushNamed(
                                       context, CreateBlogScreen.routeName,
-                                      arguments: {'id': blogs[index].blogId});
+                                      arguments: blogs[index].blogId);
                                 },
                                 child: const Text("Chỉnh sửa"),
                               ),

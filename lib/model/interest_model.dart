@@ -8,7 +8,7 @@ class InterestModel {
     required this.interestId,
     required this.name,
     required this.imageUrl,
-    this.numOfBlog = "0",
+    required this.numOfBlog,
   });
 
   factory InterestModel.fromListsJson(Map<String, dynamic> json) {
@@ -18,7 +18,7 @@ class InterestModel {
       imageUrl: json["image"] == null || json["image"] == ""
           ? "https://picsum.photos/id/200/200/300"
           : json["image"],
-      numOfBlog: json["num_of_blog"] ?? "0",
+      numOfBlog: json["blog_count"] ?? "0",
     );
   }
 }

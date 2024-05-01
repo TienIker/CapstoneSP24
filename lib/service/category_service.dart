@@ -10,7 +10,7 @@ import 'package:sharing_cafe/model/category_model.dart';
 class CategoryService {
   Future<List<CategoryModel>> getCategories() async {
     try {
-      var response = await ApiHelper().get('/interest');
+      var response = await ApiHelper().get('/interests/parent');
       if (response.statusCode == HttpStatus.ok) {
         var jsonList = json.decode(response.body) as List;
         return jsonList
