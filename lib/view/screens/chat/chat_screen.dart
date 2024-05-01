@@ -289,6 +289,11 @@ class _ChatScreenState extends State<ChatScreen> {
                             appointment: messages[index].appointment,
                             isAppointment: messages[index].isAppointment,
                           );
+                          bool isPast = message.isAppointment == true &&
+                              messages[index]
+                                  .appointment!
+                                  .dateTime
+                                  .isBefore(DateTime.now());
                           bool canConfirm =
                               message.appointment?.isApproved == null &&
                                   message.isAppointment == true &&
@@ -343,89 +348,104 @@ class _ChatScreenState extends State<ChatScreen> {
                                     maxLines: 3,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(
-                                    height: 4,
-                                  ),
-                                  Visibility(
-                                    visible:
-                                        message.appointment?.isApproved == true,
-                                    child: const Text("Đã xác nhận",
-                                        style: TextStyle(
-                                          color: Colors.green,
-                                          fontWeight: FontWeight.bold,
-                                        )),
-                                  ),
-                                  const SizedBox(
-                                    height: 4,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      canCancel
-                                          ? TextButton(
-                                              style: TextButton.styleFrom(
-                                                  backgroundColor: kErrorColor,
-                                                  fixedSize:
-                                                      const Size(100, 20)),
-                                              onPressed: () async {
-                                                await ChatService()
-                                                    .changeStatusSchedule(
-                                                        message
-                                                            .appointment!.id!,
-                                                        false);
-                                                ErrorHelper.showError(
-                                                    message:
-                                                        "Hủy lịch hẹn thành công");
-                                                setState(() {
-                                                  message.appointment!
-                                                      .isApproved = false;
-                                                });
-                                              },
-                                              child: const Text(
-                                                "Hủy",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
+                                  if (!isPast)
+                                    Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 4,
+                                        ),
+                                        Visibility(
+                                          visible:
+                                              message.appointment?.isApproved ==
+                                                  true,
+                                          child: const Text("Đã xác nhận",
+                                              style: TextStyle(
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.bold,
+                                              )),
+                                        ),
+                                        const SizedBox(
+                                          height: 4,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            canCancel
+                                                ? TextButton(
+                                                    style: TextButton.styleFrom(
+                                                        backgroundColor:
+                                                            kErrorColor,
+                                                        fixedSize: const Size(
+                                                            100, 20)),
+                                                    onPressed: () async {
+                                                      await ChatService()
+                                                          .changeStatusSchedule(
+                                                              message
+                                                                  .appointment!
+                                                                  .id!,
+                                                              false);
+                                                      ErrorHelper.showError(
+                                                          message:
+                                                              "Hủy lịch hẹn thành công");
+                                                      setState(() {
+                                                        message.appointment!
+                                                            .isApproved = false;
+                                                      });
+                                                    },
+                                                    child: const Text(
+                                                      "Hủy",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  )
+                                                : const Text("Đã hủy",
+                                                    style: TextStyle(
+                                                        color: Colors.red,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                            Visibility(
+                                              visible: canConfirm,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 8),
+                                                child: TextButton(
+                                                  style: TextButton.styleFrom(
+                                                      backgroundColor:
+                                                          Colors.green,
+                                                      fixedSize:
+                                                          const Size(100, 20)),
+                                                  onPressed: () async {
+                                                    await ChatService()
+                                                        .changeStatusSchedule(
+                                                            message.appointment!
+                                                                .id!,
+                                                            true);
+                                                    ErrorHelper.showError(
+                                                        message:
+                                                            "Xác nhận lịch hẹn thành công");
+                                                    setState(() {
+                                                      message.appointment!
+                                                          .isApproved = true;
+                                                    });
+                                                  },
+                                                  child: const Text(
+                                                    "Xác nhận",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
                                                 ),
                                               ),
-                                            )
-                                          : const Text("Đã hủy",
-                                              style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontWeight: FontWeight.bold)),
-                                      Visibility(
-                                        visible: canConfirm,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 8),
-                                          child: TextButton(
-                                            style: TextButton.styleFrom(
-                                                backgroundColor: Colors.green,
-                                                fixedSize: const Size(100, 20)),
-                                            onPressed: () async {
-                                              await ChatService()
-                                                  .changeStatusSchedule(
-                                                      message.appointment!.id!,
-                                                      true);
-                                              ErrorHelper.showError(
-                                                  message:
-                                                      "Xác nhận lịch hẹn thành công");
-                                              setState(() {
-                                                message.appointment!
-                                                    .isApproved = true;
-                                              });
-                                            },
-                                            child: const Text(
-                                              "Xác nhận",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold),
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
-                                  )
+                                      ],
+                                    )
                                 ],
                               ),
                             )
