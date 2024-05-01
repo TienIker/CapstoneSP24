@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
+import 'package:sharing_cafe/helper/datetime_helper.dart';
 import 'package:sharing_cafe/helper/error_helper.dart';
 import 'package:sharing_cafe/helper/shared_prefs_helper.dart';
 import 'package:sharing_cafe/model/comment_model.dart';
@@ -42,19 +43,6 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
             }));
 
     super.initState();
-  }
-
-  String howOldFrom(DateTime createdAt) {
-    var diff = DateTime.now().difference(createdAt);
-    if (diff.inDays > 0) {
-      return "${diff.inDays} ngày trước";
-    } else if (diff.inHours > 0) {
-      return "${diff.inHours} giờ trước";
-    } else if (diff.inMinutes > 0) {
-      return "${diff.inMinutes} phút trước";
-    } else {
-      return "vài giây trước";
-    }
   }
 
   @override
@@ -278,7 +266,8 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                                         width: 16,
                                       ),
                                       Text(
-                                        howOldFrom(blog.createdAt),
+                                        DateTimeHelper.howOldFrom(
+                                            blog.createdAt),
                                         style:
                                             TextStyle(color: Colors.grey[600]),
                                       )

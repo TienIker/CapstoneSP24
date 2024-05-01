@@ -28,6 +28,23 @@ class BlogService {
     return [];
   }
 
+  Future<List<BlogModel>> search(String searchString) async {
+    try {
+      var response =
+          await ApiHelper().get('/auth/user/blog?title=$searchString');
+      if (response.statusCode == HttpStatus.ok) {
+        var jsonList = json.decode(response.body) as List;
+        return jsonList.map<BlogModel>((e) => BlogModel.fromJson(e)).toList();
+      } else {
+        ErrorHelper.showError(
+            message: "Lỗi ${response.statusCode}: Không thể tìm kiếm blog");
+      }
+    } on Exception catch (_, e) {
+      print(e);
+    }
+    return [];
+  }
+
   // get my blog
   Future<List<BlogModel>> getMyBlogs() async {
     try {

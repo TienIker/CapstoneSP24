@@ -12,7 +12,7 @@ import 'package:sharing_cafe/view/screens/blogs/blog_list/components/blog_card_2
 import 'package:sharing_cafe/view/screens/blogs/blog_list/components/blog_card_3.dart';
 import 'package:sharing_cafe/view/screens/blogs/create_blog/create_blog_screen.dart';
 import 'package:sharing_cafe/view/screens/blogs/my_blogs/my_blog_screen.dart';
-import 'package:sharing_cafe/view/screens/events/search/search_screen.dart';
+import 'package:sharing_cafe/view/screens/blogs/search/search_blog_screen.dart';
 
 import 'components/blog_card.dart';
 
@@ -37,19 +37,6 @@ class _BlogListScreenState extends State<BlogListScreen> {
               _isLoading = false;
             }));
     super.initState();
-  }
-
-  String howOldFrom(DateTime createdAt) {
-    var diff = DateTime.now().difference(createdAt);
-    if (diff.inDays > 0) {
-      return "${diff.inDays} ngày trước";
-    } else if (diff.inHours > 0) {
-      return "${diff.inHours} giờ trước";
-    } else if (diff.inMinutes > 0) {
-      return "${diff.inMinutes} phút trước";
-    } else {
-      return "vài giây trước";
-    }
   }
 
   @override
@@ -93,7 +80,7 @@ class _BlogListScreenState extends State<BlogListScreen> {
               size: 24,
             ),
             onPressed: () {
-              Navigator.pushNamed(context, SearchScreen.routeName);
+              Navigator.pushNamed(context, SearchBlogScreen.routeName);
             },
           ),
         ],
@@ -130,7 +117,7 @@ class _BlogListScreenState extends State<BlogListScreen> {
                             avtUrl: blog.ownerAvatar ??
                                 'https://picsum.photos/id/200/200/300',
                             ownerName: blog.ownerName,
-                            time: howOldFrom(blog.createdAt),
+                            time: DateTimeHelper.howOldFrom(blog.createdAt),
                             onTap: () {
                               Navigator.pushNamed(
                                   context, BlogDetailScreen.routeName,
@@ -242,7 +229,7 @@ class _BlogListScreenState extends State<BlogListScreen> {
                           avtUrl: blog.ownerAvatar ??
                               'https://picsum.photos/id/200/200/300',
                           ownerName: blog.ownerName,
-                          time: howOldFrom(blog.createdAt),
+                          time: DateTimeHelper.howOldFrom(blog.createdAt),
                           onTap: () {
                             Navigator.pushNamed(
                                 context, BlogDetailScreen.routeName,

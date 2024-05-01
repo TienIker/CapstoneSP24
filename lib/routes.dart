@@ -9,6 +9,7 @@ import 'package:sharing_cafe/view/screens/blogs/blog_detail/blog_detail_screen.d
 import 'package:sharing_cafe/view/screens/blogs/blog_list/blog_list_screen.dart';
 import 'package:sharing_cafe/view/screens/blogs/create_blog/create_blog_screen.dart';
 import 'package:sharing_cafe/view/screens/blogs/my_blogs/my_blog_screen.dart';
+import 'package:sharing_cafe/view/screens/blogs/search/search_blog_screen.dart';
 import 'package:sharing_cafe/view/screens/chat/chat_screen.dart';
 import 'package:sharing_cafe/view/screens/events/create_event/create_event_screen.dart';
 import 'package:sharing_cafe/view/screens/events/event_detail/event_detail_screen.dart';
@@ -19,8 +20,11 @@ import 'package:sharing_cafe/view/screens/friends/friends_screen.dart';
 import 'package:sharing_cafe/view/screens/friends/pending_screen.dart';
 import 'package:sharing_cafe/view/screens/matching/swipe_screen.dart';
 import 'package:sharing_cafe/view/screens/home/home_screen.dart';
+import 'package:sharing_cafe/view/screens/notification/notification_screen.dart';
+import 'package:sharing_cafe/view/screens/profiles/preview_my_profile/preview_my_profile_screen.dart';
 import 'package:sharing_cafe/view/screens/profiles/profile_page/profile_screen.dart';
 import 'package:sharing_cafe/view/screens/profiles/update_profile/update_profile_screen.dart';
+
 import 'view/screens/auth/complete_profile/select_interest_screen.dart';
 import 'view/screens/auth/forgot_password/forgot_password_screen.dart';
 import 'view/screens/init_screen.dart';
@@ -43,6 +47,7 @@ final Map<String, WidgetBuilder> routes = {
   HomeScreen.routeName: (context) => const HomeScreen(),
   ProfileScreen.routeName: (context) => const ProfileScreen(),
   UpdateProfileScreen.routeName: (context) => const UpdateProfileScreen(),
+  PreviewMyProfileScreen.routeName: (context) => const PreviewMyProfileScreen(),
   EventListScreen.routeName: (context) => const EventListScreen(),
   EventDetailScreen.routeName: (context) => const EventDetailScreen(),
   CreateEventScreen.routeName: (context) => const CreateEventScreen(),
@@ -59,7 +64,9 @@ final Map<String, WidgetBuilder> routes = {
   ChatScreen.routeName: (context) => const ChatScreen(),
   ConfirmEmailScreen.routeName: (context) => const ConfirmEmailScreen(),
   PendingScreen.routeName: (context) => const PendingScreen(),
+  NotificationScreen.routeName: (context) => const NotificationScreen(),
   AppointmentHistoryScreen.routeName: (context) =>
       const AppointmentHistoryScreen(),
   MyBlogScreen.routeName: (context) => const MyBlogScreen(),
+  SearchBlogScreen.routeName: (context) => const SearchBlogScreen(),
 };

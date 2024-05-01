@@ -51,19 +51,6 @@ class _HomeScreen extends State<HomeScreen> {
     });
   }
 
-  String howOldFrom(DateTime createdAt) {
-    var diff = DateTime.now().difference(createdAt);
-    if (diff.inDays > 0) {
-      return "${diff.inDays} ngày trước";
-    } else if (diff.inHours > 0) {
-      return "${diff.inHours} giờ trước";
-    } else if (diff.inMinutes > 0) {
-      return "${diff.inMinutes} phút trước";
-    } else {
-      return "vài giây trước";
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -227,7 +214,7 @@ class _HomeScreen extends State<HomeScreen> {
                             avtUrl: blog.ownerAvatar ??
                                 'https://picsum.photos/id/200/200/300',
                             ownerName: blog.ownerName,
-                            time: howOldFrom(blog.createdAt),
+                            time: DateTimeHelper.howOldFrom(blog.createdAt),
                             onTap: () {
                               Navigator.pushNamed(
                                   context, BlogDetailScreen.routeName,

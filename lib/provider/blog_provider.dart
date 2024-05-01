@@ -8,11 +8,15 @@ class BlogProvider extends ChangeNotifier {
   List<BlogModel> _blogs = [];
   BlogModel? _blogDetails;
   List<BlogModel> _myBlogs = [];
+  final List<String> _searchHistory = [];
+  List<BlogModel> _searchBlogs = [];
 
   // public
   List<BlogModel> get blogs => _blogs;
   BlogModel get blogDetails => _blogDetails!;
   List<BlogModel> get myBlogs => _myBlogs;
+  List<String> get searchHistory => _searchHistory;
+  List<BlogModel> get searchBlogs => _searchBlogs;
 
   Future getBlogs() async {
     _blogs = await BlogService().getBlogs();
@@ -48,5 +52,37 @@ class BlogProvider extends ChangeNotifier {
   Future getMyBlogs() async {
     _myBlogs = await BlogService().getMyBlogs();
     notifyListeners();
+  }
+
+  void removeFromSearchHistory(String query) {
+    _searchHistory.remove(query);
+    notifyListeners();
+  }
+
+  void removeAllSearchHistory() {
+    _searchHistory.clear();
+    notifyListeners();
+  }
+
+  Future search(String searchString) async {
+    if (searchString == "") {
+      _searchBlogs.clear();
+      notifyListeners();
+      return;
+    }
+    _searchBlogs = await BlogService().search(searchString);
+    notifyListeners();
+  }
+
+  disposeSearchEvents() {
+    _searchBlogs.clear();
+    notifyListeners();
+  }
+
+  void insertSearchHistry(String value) {
+    if (value.isNotEmpty) {
+      _searchHistory.add(value);
+      notifyListeners();
+    }
   }
 }
