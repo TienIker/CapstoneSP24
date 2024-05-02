@@ -41,7 +41,6 @@ class AccountProvider extends ChangeNotifier {
     pref.setString("email", result.email);
     pref.setString("userName", result.userName);
     pref.setString("password", result.password);
-    Fluttertoast.showToast(msg: "Đăng ký thành công");
     await LocationService().updateLocation();
   }
 

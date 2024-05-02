@@ -6,6 +6,8 @@ import 'package:sharing_cafe/service/blog_service.dart';
 class BlogProvider extends ChangeNotifier {
   // private
   List<BlogModel> _blogs = [];
+  List<BlogModel> _popularBlogs = [];
+  List<BlogModel> _newBlogs = [];
   BlogModel? _blogDetails;
   List<BlogModel> _myBlogs = [];
   final List<String> _searchHistory = [];
@@ -13,6 +15,8 @@ class BlogProvider extends ChangeNotifier {
 
   // public
   List<BlogModel> get blogs => _blogs;
+  List<BlogModel> get popularBlogs => _popularBlogs;
+  List<BlogModel> get newBlogs => _newBlogs;
   BlogModel get blogDetails => _blogDetails!;
   List<BlogModel> get myBlogs => _myBlogs;
   List<String> get searchHistory => _searchHistory;
@@ -20,6 +24,16 @@ class BlogProvider extends ChangeNotifier {
 
   Future getBlogs() async {
     _blogs = await BlogService().getBlogs();
+    notifyListeners();
+  }
+
+  Future getPopularBlogs() async {
+    _popularBlogs = await BlogService().getPopularBlogs();
+    notifyListeners();
+  }
+
+  Future getNewBlogs() async {
+    _newBlogs = await BlogService().getNewBlogs();
     notifyListeners();
   }
 

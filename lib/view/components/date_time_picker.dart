@@ -1,8 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker_bdaya/flutter_datetime_picker_bdaya.dart';
 import 'package:intl/intl.dart';
 import 'package:sharing_cafe/constants.dart';
+import 'package:sharing_cafe/helper/datetime_helper.dart';
 import 'package:sharing_cafe/helper/error_helper.dart';
 
 class DateTimePicker extends StatefulWidget {
@@ -29,18 +31,20 @@ class _DateTimePickerState extends State<DateTimePicker> {
   final DateFormat dateFormat = DateFormat('MMM d, yyyy h:mm a');
 
   Future<void> _pickDateTime(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: selectedDateTime,
-      firstDate: widget.firstDate ?? DateTime.now(),
-      lastDate:
-          widget.lastDate ?? DateTime.now().add(const Duration(days: 365 * 5)),
+    final DateTime? pickedDate = await DatePickerBdaya.showDatePicker(
+      context,
+      locale: LocaleType.vi,
+      currentTime: selectedDateTime,
+      minTime: widget.firstDate ?? DateTime.now(),
+      maxTime:
+          widget.lastDate ?? DateTime.now().add(const Duration(days: 30 * 6)),
     );
     if (pickedDate == null) return;
 
-    final TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(selectedDateTime ?? DateTime.now()),
+    final DateTime? pickedTime = await DatePickerBdaya.showTimePicker(
+      context,
+      locale: LocaleType.vi,
+      currentTime: selectedDateTime ?? DateTime.now(),
     );
     if (pickedTime == null) return;
     var isPast = pickedTime.hour < DateTime.now().hour ||
@@ -98,7 +102,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Text(
-                      '${dateFormat.format(selectedDateTime!)} +07',
+                      '${DateTimeHelper.formatDateTime2(selectedDateTime)}',
                       style: const TextStyle(
                         fontSize: 16.0,
                       ),

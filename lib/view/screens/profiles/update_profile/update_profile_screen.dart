@@ -81,23 +81,26 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         .getUserProfile()
         .then((value) async {
       if (value != null) {
-        var provinces = await LocationService().getProvince();
-        var province = provinces
-            .where(
-                (element) => element.province == value.address.split(', ')[1])
-            .firstOrNull;
-        if (province != null) {
-          provinceId = province.provinceId;
+        if (value.address.contains(",")) {
+          var provinces = await LocationService().getProvince();
+          var province = provinces
+              .where(
+                  (element) => element.province == value.address.split(', ')[1])
+              .firstOrNull;
+          if (province != null) {
+            provinceId = province.provinceId;
+            _addressProvince = province;
+            _addressDistrict = await LocationService()
+                .getDistrict(provinceId)
+                .then((v) => v
+                    .where((element) =>
+                        element.fullName == value.address.split(', ')[0])
+                    .firstOrNull);
+          }
         }
         _userNameController.text = value.userName;
         _imageUrl = value.profileAvatar;
         _age = value.age;
-        _addressProvince = province;
-        _addressDistrict = await LocationService().getDistrict(provinceId).then(
-            (v) => v
-                .where((element) =>
-                    element.fullName == value.address.split(', ')[0])
-                .firstOrNull);
         _storyController.text = value.story!;
         _gender = value.gender;
         if (value.purpose != null) {

@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/provider/account_provider.dart';
 import 'package:sharing_cafe/view/components/form_error.dart';
@@ -215,6 +216,8 @@ class _RegisterScreen extends State<RegisterScreen> {
                                       .confirmVerificationEmail(
                                           emailController.text,
                                           passwordController.text);
+                                  Fluttertoast.showToast(
+                                      msg: "Đăng ký thành công");
                                   // if all are valid then go to success screen
                                   if (isConfirm) {
                                     Navigator.pushNamed(context,

@@ -32,6 +32,10 @@ class _BlogListScreenState extends State<BlogListScreen> {
     });
     Provider.of<BlogProvider>(context, listen: false)
         .getBlogs()
+        .then((_) =>
+            Provider.of<BlogProvider>(context, listen: false).getPopularBlogs())
+        .then((_) =>
+            Provider.of<BlogProvider>(context, listen: false).getNewBlogs())
         .then((_) => setState(() {
               _isLoading = false;
             }));
@@ -89,7 +93,8 @@ class _BlogListScreenState extends State<BlogListScreen> {
               child: CircularProgressIndicator.adaptive(),
             )
           : Consumer<BlogProvider>(builder: (context, value, child) {
-              var blogs = value.blogs;
+              var blogs = value.popularBlogs;
+              var newBlogs = value.newBlogs;
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ListView(
@@ -204,9 +209,9 @@ class _BlogListScreenState extends State<BlogListScreen> {
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: blogs.length,
+                      itemCount: newBlogs.length,
                       itemBuilder: (context, index) {
-                        var blog = blogs[index];
+                        var blog = newBlogs[index];
                         return BlogCard(
                           imageUrl: blog.image,
                           title: blog.title,

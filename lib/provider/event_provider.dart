@@ -151,5 +151,7 @@ class EventProvider extends ChangeNotifier {
     }
   }
 
-  deleteEvent(String eventId) {}
+  Future<bool> deleteEvent(String eventId) {
+    return EventService().deleteEvent(eventId);
+  }
 }

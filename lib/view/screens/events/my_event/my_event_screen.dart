@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/helper/datetime_helper.dart';
@@ -133,6 +134,15 @@ class _MyEventScreenState extends State<MyEventScreen> {
                                                   .deleteEvent(
                                                       events[index].eventId)
                                                   .then((value) {
+                                                if (value) {
+                                                  Fluttertoast.showToast(
+                                                      msg:
+                                                          "Xóa sự kiện thành công");
+                                                  Provider.of<EventProvider>(
+                                                          context,
+                                                          listen: false)
+                                                      .getMyEvents();
+                                                }
                                                 Navigator.pop(context);
                                               });
                                             },

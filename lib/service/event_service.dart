@@ -250,4 +250,19 @@ class EventService {
     }
     return false;
   }
+
+  //delete event
+  Future<bool> deleteEvent(String eventId) async {
+    try {
+      var response = await ApiHelper().delete('/event/$eventId');
+      if (response.statusCode == HttpStatus.ok) {
+        return true;
+      }
+      ErrorHelper.showError(
+          message: "Lỗi ${response.statusCode}: Không thể xóa sự kiện");
+    } catch (e) {
+      print(e);
+    }
+    return false;
+  }
 }

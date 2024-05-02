@@ -145,8 +145,9 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
                       isApprove: true);
                 }
                 if (result) {
-                  Provider.of<BlogProvider>(context, listen: false)
+                  await Provider.of<BlogProvider>(context, listen: false)
                       .getMyBlogs();
+                  Navigator.of(context).pop();
                 }
               },
               style: ButtonStyle(

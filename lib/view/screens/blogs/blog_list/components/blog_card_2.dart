@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:sharing_cafe/constants.dart';
 import 'package:sharing_cafe/view/components/custom_network_image.dart';
 
@@ -72,12 +73,14 @@ class BlogCard2 extends StatelessWidget {
                           const SizedBox(
                             width: 8.0,
                           ),
-                          Text(
-                            ownerName,
-                            style: const TextStyle(
-                              color: kPrimaryColor,
-                              fontSize: 12,
-                              overflow: TextOverflow.ellipsis,
+                          Expanded(
+                            child: Text(
+                              ownerName,
+                              style: const TextStyle(
+                                color: kPrimaryColor,
+                                fontSize: 12,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ),
                           const SizedBox(
